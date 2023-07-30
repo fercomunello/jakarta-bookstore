@@ -2,13 +2,12 @@
 set -e
 cd $(dirname $0)
 
-#export $(xargs < cat config/wildfly.properties)
-
 set -a
 . config/wildfly.properties
 set +a
 
 reset=false
+hard_reset=false
 deploy=false
 debug_port=8787
 
@@ -17,6 +16,10 @@ do
   case "$1" in
     -r|--reset)
       reset=true
+      if [[ $2 = "hard" ]]; then
+        hard_reset=true
+        shift
+      fi
       ;;
     -d|--deploy)
       deploy=true
@@ -24,15 +27,16 @@ do
     --debug)
       if [[ $2 =~ [1-9] ]]; then
         debug_port=$2
+        shift
       fi
-      shift
       ;;
     *|-h|--help)
       echo "Usage: ./run.sh [args...]"
       echo "where args include:"
-      echo "  -r, --reset: Reset the sandbox environment and provision a new WildFly instance."
-      echo "  -d, --deploy: Build and deploy the .war artifacts on WildFly."
+      echo "  -d|--deploy: Build and deploy the .war artifacts on WildFly."
       echo "  --debug: Set the remote debug port. Default port is 8787."
+      echo "  --reset|-r: Reset the sandbox environment."
+      echo "  --reset|-r hard: Delete all sandbox files and provision a new WildFly instance."
       exit 0
   esac
   shift
@@ -40,14 +44,19 @@ done
 
 reset_environment() {
   rm -rf server
+  if test ${hard_reset} = true; then
+    rm -rf downloads/*
+  fi
 }
 
 rm_temporary_files() {
-  echo "=> Clear standalone/tmp folder"
-  rm -rf server/standalone/tmp/*
+  if [ -d "server" ]; then
+    echo "=> Clear standalone/tmp folder"
+    rm -rf server/standalone/tmp/*
 
-  echo "=> Clear standalone_xml_history/* folder"
-  rm -rf server/standalone/configuration/standalone_xml_history/*
+    echo "=> Clear standalone_xml_history/* folder"
+    rm -rf server/standalone/configuration/standalone_xml_history/*
+  fi
 }
 
 rm_non_unix_scripts() {
@@ -65,25 +74,50 @@ rm_non_unix_scripts() {
 }
 
 provision_wildfly() {
-  mkdir tmp && cd tmp
+  if [ ! -d "downloads" ]; then
+    mkdir downloads
+  fi
+  cd downloads
 
-  echo ""
-  echo "=> Download and unzip WildFly Galleon packages"
-  echo ""
-  curl -L -O \
-  https://github.com/wildfly/galleon/releases/download/$WILDFLY_GALLEON_VERSION/galleon-$WILDFLY_GALLEON_VERSION.zip
+  galleon_cached=false
+  if [[ -n "$(find . -name 'galleon-*' | head -1)" ]]; then
+    if [[ -d "galleon-${GALLEON_VERSION}" ]]; then
+      galleon_cached=true
+    fi
+  fi
 
-  unzip galleon-$WILDFLY_GALLEON_VERSION.zip
+  if test ${galleon_cached} = false; then
+    echo ""
+    echo "=> Download and unzip WildFly Galleon packages"
+    echo ""
+    curl -L -O \
+    https://github.com/wildfly/galleon/releases/download/$GALLEON_VERSION/galleon-$GALLEON_VERSION.zip
 
-  echo ""
-  echo "=> Provision a custom WildFly instance"
-  echo ""
-  ./galleon-$WILDFLY_GALLEON_VERSION/bin/galleon.sh install wildfly:current#$WILDFLY_VERSION \
-    --dir=../server --config=standalone/$WILDFLY_CONFIG --default-configs=standalone/$WILDFLY_CONFIG \
-    --verbose --layers=$WILDFLY_LAYERS,$MIDDLEWARE_LAYERS,$JAKARTA_EE_LAYERS,$MICROPROFILE_LAYERS
+    unzip galleon-$GALLEON_VERSION.zip
+    rm -f galleon-$GALLEON_VERSION.zip
+  fi
+
+  wildfly_cached=false
+  if [[ -n "$(find . -name 'wildfly-*' | head -1)" ]]; then
+    if [[ -d "wildfly-${WILDFLY_VERSION}" ]]; then
+      wildfly_cached=true
+    fi
+  fi
+
+  if test ${wildfly_cached} = false; then
+    rm -rf wildfly-$WILDFLY_VERSION
+    echo ""
+    echo "=> Provision a custom WildFly instance"
+    echo ""
+    ./galleon-$GALLEON_VERSION/bin/galleon.sh install wildfly:current#$WILDFLY_VERSION \
+     --dir=wildfly-$WILDFLY_VERSION --config=standalone/$WILDFLY_CONFIG --default-configs=standalone/$WILDFLY_CONFIG \
+     --verbose --layers=$WILDFLY_LAYERS,$MIDDLEWARE_LAYERS,$JAKARTA_EE_LAYERS,$MICROPROFILE_LAYERS
+  fi
 
   cd ..
-  rm -rf tmp/
+  mkdir server && cd server
+  cp -v -r ../downloads/wildfly-$WILDFLY_VERSION/* .
+  cd ..
 
   rm_non_unix_scripts
 
