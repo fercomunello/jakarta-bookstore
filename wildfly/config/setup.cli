@@ -1,0 +1,10 @@
+# => Run configuration script via ./jboss-cli.sh
+
+# Start the server in admin-only mode
+embed-server --std-out=echo
+
+# Show runtime info
+version
+
+# Stop the embedded server
+stop-embedded-server
