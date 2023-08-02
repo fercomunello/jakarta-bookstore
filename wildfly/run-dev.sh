@@ -360,6 +360,19 @@ print_wildfly_version() {
   cd - > /dev/null
 }
 
+print_help() {
+  echo -e "The following commands are available:"
+  echo
+  echo -e "[\033[1;34mh\033[0m] - Show this help."
+  if test ${DEPLOY} = true; then
+    echo -e "[\033[1;34md\033[0m] - Deploy all applications."
+    echo -e "[\033[1;34mu\033[0m] - Undeploy all applications."
+  fi
+  echo -e "[\033[1;34mq\033[0m] - Quit the application server and this session."
+  echo -e "[\033[1;34mv\033[0m] - Show application server version and other info."
+  echo
+}
+
 launch_prompt() {
   echo ''
 
@@ -385,9 +398,9 @@ launch_prompt() {
       else
         press_to="\r\033[KPress \033[1;34m[d]\033[0m to deploy"
       fi
-      press_to+=", \033[1;34m[u]\033[0m to undeploy, \033[1;34m[q]\033[0m to quit."
+      press_to+=", \033[1;34m[u]\033[0m to undeploy, \033[1;34m[q]\033[0m to quit, \033[1;34m[h]\033[0m for more options."
     else
-      press_to+="\r\033[KPress \033[1;34m[q]\033[0m to quit."
+      press_to+="\r\033[KPress \033[1;34m[q]\033[0m to quit, \033[1;34m[h]\033[0m for more options."
     fi
 
     tput cup $(tput lines) 0
@@ -414,6 +427,9 @@ launch_prompt() {
          q)
            stop_wildfly
            break ;;
+         h)
+           print_help
+           ;;
          *)
            echo -n ""
            ;;
