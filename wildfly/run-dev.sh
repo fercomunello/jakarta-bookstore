@@ -342,6 +342,38 @@ stop_wildfly() {
   trap SIGINT
 }
 
+restart_wildfly() {
+  local -r wildfly_started=$(cat server/bin/tmp/started.out)
+  if test ${wildfly_started} = false; then
+    return
+  fi
+  undeploy_apps 'silent'
+
+  cd server/bin || exit 1
+
+  sh ./jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=':shutdown(restart=true)' \
+    > tmp/restart.out && rm -f tmp/restart.out &
+
+  do_sleep 5 'Restarting the server' 'tmp/restart.out'
+
+  cd - > /dev/null
+}
+
+reload_wildfly() {
+  local -r wildfly_started=$(cat server/bin/tmp/started.out)
+  if test ${wildfly_started} = false; then
+    return
+  fi
+  cd server/bin || exit 1
+
+  sh ./jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=':reload' \
+    > tmp/reload.out && rm -f tmp/reload.out &
+
+  do_sleep 5 'Reloading the server' 'tmp/reload.out'
+
+  cd - > /dev/null
+}
+
 wait_server_startup() {
   sleep 2
   cd server/bin || exit 1
@@ -368,8 +400,10 @@ print_help() {
     echo -e "[\033[1;34md\033[0m] - Deploy all applications."
     echo -e "[\033[1;34mu\033[0m] - Undeploy all applications."
   fi
-  echo -e "[\033[1;34mq\033[0m] - Quit the application server and this session."
+  echo -e "[\033[1;34ms\033[0m] - Restart application server."
+  echo -e "[\033[1;34ml\033[0m] - Reload application server configurations."
   echo -e "[\033[1;34mv\033[0m] - Show application server version and other info."
+  echo -e "[\033[1;34mq\033[0m] - Quit the application server and this session."
   echo
 }
 
@@ -400,7 +434,9 @@ launch_prompt() {
       fi
       press_to+=", \033[1;34m[u]\033[0m to undeploy, \033[1;34m[q]\033[0m to quit, \033[1;34m[h]\033[0m for more options."
     else
-      press_to+="\r\033[KPress \033[1;34m[q]\033[0m to quit, \033[1;34m[h]\033[0m for more options."
+      press_to+="\r\033[KPress \033[1;34m[q]\033[0m to quit"
+      press_to+=", \033[1;34m[s]\033[0m to restart, \033[1;34m[l]\033[0m to reload"
+      press_to+=", \033[1;34m[h]\033[0m for more options."
     fi
 
     tput cup $(tput lines) 0
@@ -423,6 +459,14 @@ launch_prompt() {
            ;;
          v)
            print_wildfly_version
+           ;;
+         l)
+           reload_wildfly
+           ;;
+         s)
+           clear
+           tput cup $(($(tput lines)-2)) 0
+           restart_wildfly
            ;;
          q)
            stop_wildfly
