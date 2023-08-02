@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 set -e
+set -m
 cd $(dirname $0)
 
 set -a
@@ -9,7 +10,10 @@ set +a
 RESET='false'
 DEPLOY='false'
 DEBUG_PORT=8787
+MGMT_PORT=9990
 HARD_RESET='false'
+
+deployed_wars=0
 
 while [ "$#" -gt 0 ]
 do
@@ -51,8 +55,9 @@ reset_environment() {
 
 rm_temporary_files() {
   if [ -d "server" ]; then
-    echo "=> Clear standalone/tmp folder"
-    rm -rf server/standalone/tmp/*
+    echo "=> Clear temporary files and previous data"
+    rm -rf server/standalone/tmp/
+    rm -rf server/standalone/data/
     rm -rf server/bin/tmp/*
 
     echo "=> Clear standalone_xml_history/* folder"
@@ -144,7 +149,7 @@ run_jboss_cli() {
   cp -v ../config/*.cli server/bin/config/ || exit 1
 
   cd server/bin || exit 1
-  ./jboss-cli.sh --file="config/setup-sandbox.cli"
+  sh jboss-cli.sh --file="config/setup-sandbox.cli"
   rm -rf config/
 
   cd - > /dev/null
@@ -164,6 +169,7 @@ deploy_apps_silent() {
 
   echo '=> Copy .war files to deployment folder'
   cp -v ../../bookstore/target/*.war server/standalone/deployments/ || exit 1
+  deployed_wars=$(find server/standalone/deployments -maxdepth 1 -type f -name '*.war' | wc -l | tr -d ' ')
 }
 
 start_wildfly_async() {
@@ -266,19 +272,49 @@ undeploy_apps() {
     cd - > /dev/null
     cd server/bin || exit 1
 
-    ./jboss-cli.sh --connect --controller=localhost:9990 command='undeploy *.war' \
+    sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command='undeploy *.war' \
        > tmp/undeploy.out && rm -f tmp/undeploy.out &
 
     do_sleep 5 'Undeploying' 'tmp/undeploy.out'
   else
-    local -r state=$1
-    if [ "${state}" != 'stopping' ]
+    local -r mode=$1
+    if [ "${state}" == 'silent' ]
       then echo "No applications to undeploy"
     fi
   fi
 
   cd - > /dev/null
   rm_old_deployments
+  deployed_wars=0
+}
+
+redeploy_apps() {
+  undeploy_apps 'silent'
+
+  touch mvn.out
+  mvn -T 1C package -DskipTests -f ../../bookstore/pom.xml && rm -f mvn.out &
+  do_sleep 4 'Building' 'mvn.out'
+
+  cp -v ../../bookstore/target/*.war server/standalone/deployments
+  cd server/standalone/deployments || exit 1
+
+  touch deploy.out
+  while true; do
+    if [[ $(find . -maxdepth 1 -type f -name '*.war.deployed' | wc -l | tr -d ' ') -gt 0 ]]; then
+      rm -f deploy.out
+      break
+    else
+      if [[ $(find . -maxdepth 1 -type f -name '*.war.failed' | wc -l | tr -d ' ') -gt 0 ]]; then
+        rm -f deploy.out
+        break
+      fi
+    fi
+  done &
+
+  do_sleep 3 'Deploying' 'deploy.out'
+
+  deployed_wars=$(find . -maxdepth 1 -type f -name '*.war.deployed' | wc -l | tr -d ' ')
+  cd - > /dev/null
 }
 
 stop_wildfly() {
@@ -288,11 +324,11 @@ stop_wildfly() {
     return
   fi
 
-  undeploy_apps 'stopping'
+  undeploy_apps 'silent'
 
   cd server/bin || exit 1
 
-  ./jboss-cli.sh --connect --controller=localhost:9990 command=':shutdown' \
+  sh ./jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=':shutdown' \
     > tmp/shutdown.out && rm -f tmp/shutdown.out &
 
   do_sleep 5 'Stopping the server' 'tmp/shutdown.out'
@@ -309,13 +345,23 @@ stop_wildfly() {
 wait_server_startup() {
   sleep 2
   cd server/bin || exit 1
-  ./jboss-cli.sh --connect --controller=localhost:9990 command=pwn > /dev/null
+  sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=pwn > /dev/null
+  cd - > /dev/null
+}
+
+print_wildfly_version() {
+  cd server/bin || exit 1
+
+  sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=version \
+      > tmp/version.out && echo $(cat tmp/version.out) && echo '' && rm -f tmp/version.out &
+
+  do_sleep 3 'Connecting' 'tmp/version.out'
+
   cd - > /dev/null
 }
 
 launch_prompt() {
   echo ''
-  wait_server_startup
 
   local sandbox_dir="$(pwd)"
   while true; do
@@ -331,19 +377,43 @@ launch_prompt() {
       fi
     fi
 
+    local press_to=""
+    if test ${DEPLOY} = true; then
+      pwd > /dev/null
+      if [[ "${deployed_wars}" -gt 0 ]]; then
+        press_to="\r\033[KPress \033[1;34m[d]\033[0m to re-deploy"
+      else
+        press_to="\r\033[KPress \033[1;34m[d]\033[0m to deploy"
+      fi
+      press_to+=", \033[1;34m[u]\033[0m to undeploy, \033[1;34m[q]\033[0m to quit."
+    else
+      press_to+="\r\033[KPress \033[1;34m[q]\033[0m to quit."
+    fi
+
     tput cup $(tput lines) 0
-    echo -e -n "\r\033[KPress \033[1;34m[u]\033[0m to undeploy, \033[1;34m[q]\033[0m to quit"
+    echo -e -n $press_to
     tput cup $(($LINES-2)) 0
 
     read -n 1 -r -s -t 1 reply || true
+
     if [[ "$reply" != "" ]]; then
       case "$reply" in
+         d)
+           if test ${DEPLOY} = true; then
+             redeploy_apps
+           fi
+           ;;
+         u)
+           if test ${DEPLOY} = true; then
+             undeploy_apps
+           fi
+           ;;
+         v)
+           print_wildfly_version
+           ;;
          q)
            stop_wildfly
            break ;;
-         u)
-           undeploy_apps
-           ;;
          *)
            echo -n ""
            ;;
@@ -390,6 +460,7 @@ main() {
 
   capture_logs_async
   start_wildfly_async
+  wait_server_startup
   launch_prompt
 
   exit 0
