@@ -1,17 +1,15 @@
 ```
-
-    /$$$$$           /$$                             /$$                     /$$$$$$$$ /$$$$$$$$
-   |__  $$          | $$                            | $$                    | $$_____/| $$_____/
-      | $$  /$$$$$$ | $$   /$$  /$$$$$$   /$$$$$$  /$$$$$$    /$$$$$$       | $$      | $$      
-      | $$ |____  $$| $$  /$$/ |____  $$ /$$__  $$|_  $$_/   |____  $$      | $$$$$   | $$$$$   
- /$$  | $$  /$$$$$$$| $$$$$$/   /$$$$$$$| $$  \__/  | $$      /$$$$$$$      | $$__/   | $$__/   
-| $$  | $$ /$$__  $$| $$_  $$  /$$__  $$| $$        | $$ /$$ /$$__  $$      | $$      | $$      
-|  $$$$$$/|  $$$$$$$| $$ \  $$|  $$$$$$$| $$        |  $$$$/|  $$$$$$$      | $$$$$$$$| $$$$$$$$
- \______/  \_______/|__/  \__/ \_______/|__/         \___/   \_______/      |________/|________/
-                                                                                                
+ /$$$$$$$                      /$$                   /$$                                  
+| $$__  $$                    | $$                  | $$                                  
+| $$  \ $$  /$$$$$$   /$$$$$$ | $$   /$$  /$$$$$$$ /$$$$$$    /$$$$$$   /$$$$$$   /$$$$$$ 
+| $$$$$$$  /$$__  $$ /$$__  $$| $$  /$$/ /$$_____/|_  $$_/   /$$__  $$ /$$__  $$ /$$__  $$
+| $$__  $$| $$  \ $$| $$  \ $$| $$$$$$/ |  $$$$$$   | $$    | $$  \ $$| $$  \__/| $$$$$$$$
+| $$  \ $$| $$  | $$| $$  | $$| $$_  $$  \____  $$  | $$ /$$| $$  | $$| $$      | $$_____/
+| $$$$$$$/|  $$$$$$/|  $$$$$$/| $$ \  $$ /$$$$$$$/  |  $$$$/|  $$$$$$/| $$      |  $$$$$$$
+|_______/  \______/  \______/ |__/  \__/|_______/    \___/   \______/ |__/       \_______/
 ```
 
-The Jakarta Bookstore is a **multi-tenancy system for bookstores** where each bookstore has it's data isolated from other companies in a security and reliable way.
+The Jakarta Bookstore is a **multi-tenancy system for bookstores** where each bookstore has its data isolated from other companies in a security and reliable way.
 We want to keep the system architecture very pragmatic but also very optimized, safe and stable for the long term (see the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle)) - that's why we choose to adopt the Jakarta EE specification for the back-end/middle-tier layers and plain TypeScript
 with Webpack for the front-end side, must watch this nice presentation by Adam Bien: [What happens if you apply the Thin-WAR Java EE ideas to build HTML5 apps?](https://adambien.blog/roller/abien/entry/build_to_last_from_frontend).                                              
 
