@@ -22,7 +22,7 @@ Currently, we support en-US and pt-BR locales on the wiki.
 
 ## Agile:
 This project follows the Agile principles: every new feature or change becomes a Github issue which is closed by a PR.
-We also have a [**Kanban board**](https://github.com/fercomunello/jakarta-bookstore/projects) where you can watch the current progress of the project.
+We also have a [**Kanban board**](https://github.com/users/fercomunello/projects/3) where you can watch the current progress of the project.
 
 ## 📚 Stack:
 **Jakarta EE** (Java), **WildFly/JBoss** (Application Server), **ActiveMQ** (MOM Message Broker), **Infinispan** (Distributed Cache).
