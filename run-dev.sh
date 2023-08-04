@@ -4,7 +4,7 @@ set -m
 cd $(dirname $0)
 
 set -a
-. config/wildfly.properties
+. wildfly/config/wildfly.properties
 set +a
 
 RESET='false'
@@ -68,7 +68,7 @@ rm_temporary_files() {
 rm_non_unix_scripts() {
   echo ""
   echo "=> Remove non-unix scripts from bin/"
-  cd server/bin || exit 1
+  cd server/bin
   rm installation-manager.bat installation-manager.ps1
   rm standalone.bat standalone.ps1
   rm standalone.conf.bat standalone.conf.ps1
@@ -129,7 +129,7 @@ provision_wildfly() {
 
   rm_non_unix_scripts
 
-  cd server/bin || exit 1
+  cd server/bin
   mkdir tmp
 
   echo ""
@@ -146,9 +146,9 @@ run_jboss_cli() {
   echo ""
   rm -rf server/bin/config/
   mkdir server/bin/config/
-  cp -v ../config/*.cli server/bin/config/ || exit 1
+  cp -v ../config/*.cli server/bin/config/
 
-  cd server/bin || exit 1
+  cd server/bin
   sh jboss-cli.sh --file="config/setup-sandbox.cli"
   rm -rf config/
 
@@ -163,12 +163,12 @@ rm_old_deployments() {
 
 deploy_apps_silent() {
   echo '=> Build .war artifacts...'
-  cd ../../bookstore || exit 1
+  cd ../../bookstore
   mvn -T 1C clean package -DskipTests
   cd - > /dev/null
 
   echo '=> Copy .war files to deployment folder'
-  cp -v ../../bookstore/target/*.war server/standalone/deployments/ || exit 1
+  cp -v ../../bookstore/target/*.war server/standalone/deployments/
   deployed_wars=$(find server/standalone/deployments -maxdepth 1 -type f -name '*.war' | wc -l | tr -d ' ')
 }
 
@@ -177,13 +177,12 @@ start_wildfly_async() {
   echo "=> Start WildFly..."
   echo ""
 
-  cd server/bin || exit 1
-  echo -n true > tmp/started.out
+  cd server/bin
 
   export JAVA_OPTS="-Xms512M -Xmx4G -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true" && \
   export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true" && \
   export JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=${DEBUG_PORT},server=y,suspend=n" && \
-  ./standalone.sh -c $WILDFLY_CONFIG > tmp/jboss_stdout && echo -n false > tmp/started.out &
+  ./standalone.sh -c $WILDFLY_CONFIG > tmp/jboss_stdout &
 
   WILDFLY_BACK_PID=$!
   readonly WILDFLY_BACK_PID
@@ -191,11 +190,13 @@ start_wildfly_async() {
 }
 
 capture_logs_async() {
-  cd server/bin/tmp || exit 1
-  rm -f jboss_stdout
-  mkfifo jboss_stdout
+  cd server/bin
+  [ ! -d "tmp" ] && mkdir tmp/
 
-  cat jboss_stdout &
+  rm -f tmp/jboss_stdout
+  mkfifo tmp/jboss_stdout
+
+  cat tmp/jboss_stdout &
 
   LOGS_BACK_PID=$!
   readonly LOGS_BACK_PID
@@ -204,15 +205,9 @@ capture_logs_async() {
 }
 
 dots() {
-  if [ "$1" -eq 1 ]
-    then echo .
-  fi
-  if [ "$1" -eq 2 ]
-    then echo ..
-  fi
-  if [ "$1" -eq 3 ]
-    then echo ...
-  fi
+  [ "$1" -eq 1 ] && echo .
+  [ "$1" -eq 2 ] && echo ..
+  [ "$1" -eq 3 ] && echo ...
 }
 
 do_sleep() {
@@ -229,13 +224,13 @@ do_sleep() {
     printf "\r%s%s" "${text}" "$(dots "${dots_count}")"
     tput cup $(($(tput lines)-2)) 0
     dots_count=$((dots_count + 1))
-    sleep .1
+    sleep .2
   }
   while true; do
     pwd > /dev/null
     if [[ ! -f $wait_for_file ]]; then
       show_progress
-      slept_ticks=$(awk "BEGIN {print $slept_ticks+.1; exit}")
+      slept_ticks=$(awk "BEGIN {print $slept_ticks+.2; exit}")
       if [[ $slept_ticks > $timeout ]]; then
         break
       fi
@@ -260,17 +255,12 @@ do_sleep() {
 }
 
 undeploy_apps() {
-  local -r wildfly_started=$(cat server/bin/tmp/started.out)
-  if test ${wildfly_started} = false; then
-    return
-  fi
-
   echo ''
-  cd server/standalone/deployments || exit 1
+  cd server/standalone/deployments
   pwd > /dev/null
   if [[ $(find . -maxdepth 1 -type f -name '*.war.deployed' | wc -l | tr -d ' ') -gt 0 ]]; then
     cd - > /dev/null
-    cd server/bin || exit 1
+    cd server/bin
 
     sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command='undeploy *.war' \
        > tmp/undeploy.out && rm -f tmp/undeploy.out &
@@ -296,7 +286,7 @@ redeploy_apps() {
   do_sleep 4 'Building' 'mvn.out'
 
   cp -v ../../bookstore/target/*.war server/standalone/deployments
-  cd server/standalone/deployments || exit 1
+  cd server/standalone/deployments
 
   touch deploy.out
   while true; do
@@ -318,38 +308,25 @@ redeploy_apps() {
 }
 
 stop_wildfly() {
-  trap '' SIGINT
-  local -r wildfly_started=$(cat server/bin/tmp/started.out)
-  if test ${wildfly_started} = false; then
-    return
-  fi
-
   undeploy_apps 'silent'
 
-  cd server/bin || exit 1
+  cd server/bin
 
-  sh ./jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=':shutdown' \
+  sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=':shutdown' \
     > tmp/shutdown.out && rm -f tmp/shutdown.out &
 
   do_sleep 5 'Stopping the server' 'tmp/shutdown.out'
-  echo -n false > tmp/started.out
 
   cd - > /dev/null
 
   kill $LOGS_BACK_PID
   kill $WILDFLY_BACK_PID
-
-  trap SIGINT
 }
 
 restart_wildfly() {
-  local -r wildfly_started=$(cat server/bin/tmp/started.out)
-  if test ${wildfly_started} = false; then
-    return
-  fi
   undeploy_apps 'silent'
 
-  cd server/bin || exit 1
+  cd server/bin
 
   sh ./jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=':shutdown(restart=true)' \
     > tmp/restart.out && rm -f tmp/restart.out &
@@ -360,11 +337,7 @@ restart_wildfly() {
 }
 
 reload_wildfly() {
-  local -r wildfly_started=$(cat server/bin/tmp/started.out)
-  if test ${wildfly_started} = false; then
-    return
-  fi
-  cd server/bin || exit 1
+  cd server/bin
 
   sh ./jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=':reload' \
     > tmp/reload.out && rm -f tmp/reload.out &
@@ -376,13 +349,13 @@ reload_wildfly() {
 
 wait_server_startup() {
   sleep 2
-  cd server/bin || exit 1
+  cd server/bin
   sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=pwn > /dev/null
   cd - > /dev/null
 }
 
 print_wildfly_version() {
-  cd server/bin || exit 1
+  cd server/bin
 
   sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=version \
       > tmp/version.out && echo $(cat tmp/version.out) && echo '' && rm -f tmp/version.out &
@@ -412,18 +385,6 @@ launch_prompt() {
 
   local sandbox_dir="$(pwd)"
   while true; do
-    local current_dir="$(pwd)"
-    if [ "${current_dir}" != "${sandbox_dir}" ]; then
-      if [[ "${current_dir}" == *"/bin" ]]; then
-        wildfly_started=$(cat tmp/started.out)
-        if [[ "${wildfly_started}" = false ]]; then
-          wait $LOGS_BACK_PID
-          wait $WILDFLY_BACK_PID
-          break
-        fi
-      fi
-    fi
-
     local press_to=""
     if test ${DEPLOY} = true; then
       pwd > /dev/null
@@ -495,8 +456,11 @@ adjust_window () {
 }
 
 main() {
+  trap '' SIGINT
+
   adjust_window
 
+  cd wildfly
   if [ ! -d "sandbox" ]; then
     mkdir sandbox
   fi
@@ -523,13 +487,9 @@ main() {
   wait_server_startup
   launch_prompt
 
+  trap SIGINT
+
   exit 0
-}
-
-trap ctrl_c SIGINT SIGTERM
-
-ctrl_c() {
-  stop_wildfly
 }
 
 main
