@@ -11,7 +11,7 @@
 
 The Jakarta Bookstore is a **multi-tenancy system for bookstores** where each bookstore has its data isolated from other companies in a security and reliable way.
 We want to keep the system architecture very pragmatic but also very optimized, safe and stable for the long term (see the [KISS principle](https://en.wikipedia.org/wiki/KISS_principle)) - that's why we choose to adopt the Jakarta EE specification for the back-end/middle-tier layers and plain TypeScript
-with Webpack for the front-end side, must watch this nice presentation by Adam Bien: [What happens if you apply the Thin-WAR Java EE ideas to build HTML5 apps?](https://adambien.blog/roller/abien/entry/build_to_last_from_frontend).                                              
+with Webpack for the front-end side, must watch this nice presentation by Adam Bien: [What happens if you apply the Thin-WAR Java EE ideas to build HTML5 apps?](https://adambien.blog/roller/abien/entry/build_to_last_from_frontend).                                        
 
 ## Wiki i18n:
 We have an [**internationalized wiki**](https://github.com/fercomunello/jakarta-bookstore/wiki) where you can learn about this project. 
@@ -37,7 +37,9 @@ We also have a [**Kanban board**](https://github.com/users/fercomunello/projects
 
 <br><br>
 
-### 
+## Prototypes: on-development
+<img src="https://i.imgur.com/2GQnzbH.png">
+<img src="https://i.imgur.com/Hbf5nr9.png">
 
 <div align="center">
   <small>Developed by <strong>Fernando Comunello</strong> - since July/2022</small>
