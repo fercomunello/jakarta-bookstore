@@ -46,14 +46,14 @@ do
   shift
 done
 
-reset_environment() {
+function reset_environment() {
   rm -rf server
   if test ${HARD_RESET} = true; then
     rm -rf downloads/*
   fi
 }
 
-rm_temporary_files() {
+function rm_temporary_files() {
   if [ -d "server" ]; then
     echo "=> Clear temporary files and previous data"
     rm -rf server/standalone/tmp/
@@ -65,7 +65,7 @@ rm_temporary_files() {
   fi
 }
 
-rm_non_unix_scripts() {
+function rm_non_unix_scripts() {
   echo ""
   echo "=> Remove non-unix scripts from bin/"
   cd server/bin
@@ -80,7 +80,7 @@ rm_non_unix_scripts() {
   cd - > /dev/null
 }
 
-provision_wildfly() {
+function provision_wildfly() {
   if [ ! -d "downloads" ]; then
     mkdir downloads
   fi
@@ -97,8 +97,7 @@ provision_wildfly() {
     echo ""
     echo "=> Download and unzip WildFly Galleon packages"
     echo ""
-    curl -L -O \
-    https://github.com/wildfly/galleon/releases/download/$GALLEON_VERSION/galleon-$GALLEON_VERSION.zip
+    curl -L -O https://github.com/wildfly/galleon/releases/download/$GALLEON_VERSION/galleon-$GALLEON_VERSION.zip
 
     unzip galleon-$GALLEON_VERSION.zip
     rm -f galleon-$GALLEON_VERSION.zip
@@ -140,7 +139,7 @@ provision_wildfly() {
   cd - > /dev/null
 }
 
-run_jboss_cli() {
+function run_jboss_cli() {
   echo ""
   echo "=> Run ./jboss-cli.sh commands"
   echo ""
@@ -155,13 +154,13 @@ run_jboss_cli() {
   cd - > /dev/null
 }
 
-rm_old_deployments() {
+function rm_old_deployments() {
   rm -rf server/standalone/deployments/*.war.failed
   rm -rf server/standalone/deployments/*.war.deployed
   rm -rf server/standalone/deployments/*.war
 }
 
-deploy_apps_silent() {
+function deploy_apps_silent() {
   echo '=> Build .war artifacts...'
   cd ../../bookstore
   mvn -T 1C clean package -DskipTests
@@ -172,7 +171,7 @@ deploy_apps_silent() {
   deployed_wars=$(find server/standalone/deployments -maxdepth 1 -type f -name '*.war' | wc -l | tr -d ' ')
 }
 
-start_wildfly_async() {
+function start_wildfly_async() {
   echo ""
   echo "=> Start WildFly..."
   echo ""
@@ -189,7 +188,7 @@ start_wildfly_async() {
   cd - > /dev/null
 }
 
-capture_logs_async() {
+function capture_logs_async() {
   cd server/bin
   [ ! -d "tmp" ] && mkdir tmp/
 
@@ -204,19 +203,19 @@ capture_logs_async() {
   cd - > /dev/null
 }
 
-dots() {
+function dots() {
   [ "$1" -eq 1 ] && echo .
   [ "$1" -eq 2 ] && echo ..
   [ "$1" -eq 3 ] && echo ...
 }
 
-do_sleep() {
+function do_sleep() {
   local -r timeout=$1
   local -r text=$2
   local -r wait_for_file=$3
   local dots_count=1
   local slept_ticks=0
-  show_progress() {
+  function show_progress() {
     if [ "${dots_count}" -eq 4 ]
       then dots_count=1
     fi
@@ -254,7 +253,7 @@ do_sleep() {
   done
 }
 
-undeploy_apps() {
+function undeploy_apps() {
   echo ''
   cd server/standalone/deployments
   pwd > /dev/null
@@ -278,7 +277,7 @@ undeploy_apps() {
   deployed_wars=0
 }
 
-redeploy_apps() {
+function redeploy_apps() {
   undeploy_apps 'silent'
 
   touch mvn.out
@@ -307,7 +306,7 @@ redeploy_apps() {
   cd - > /dev/null
 }
 
-stop_wildfly() {
+function stop_wildfly() {
   undeploy_apps 'silent'
 
   cd server/bin
@@ -323,7 +322,7 @@ stop_wildfly() {
   kill $WILDFLY_BACK_PID
 }
 
-restart_wildfly() {
+function restart_wildfly() {
   undeploy_apps 'silent'
 
   cd server/bin
@@ -336,7 +335,7 @@ restart_wildfly() {
   cd - > /dev/null
 }
 
-reload_wildfly() {
+function reload_wildfly() {
   cd server/bin
 
   sh ./jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=':reload' \
@@ -347,14 +346,14 @@ reload_wildfly() {
   cd - > /dev/null
 }
 
-wait_server_startup() {
+function wait_server_startup() {
   sleep 2
   cd server/bin
   sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=pwn > /dev/null
   cd - > /dev/null
 }
 
-print_wildfly_version() {
+function print_wildfly_version() {
   cd server/bin
 
   sh jboss-cli.sh --connect --controller=localhost:${MGMT_PORT} command=version \
@@ -365,7 +364,7 @@ print_wildfly_version() {
   cd - > /dev/null
 }
 
-print_help() {
+function print_help() {
   echo -e "The following commands are available:"
   echo
   echo -e "[\033[1;34mh\033[0m] - Show this help."
@@ -380,7 +379,7 @@ print_help() {
   echo
 }
 
-launch_prompt() {
+function launch_prompt() {
   echo ''
 
   local sandbox_dir="$(pwd)"
@@ -445,17 +444,16 @@ launch_prompt() {
 }
 
 LINES=0
-adjust_window () {
+function adjust_window () {
   clear
 
   LINES=$(tput lines)
-  readonly LINES
 
   tput csr 0 $(($LINES-2))
   tput cup 0 0
 }
 
-main() {
+function main() {
   trap '' SIGINT
 
   adjust_window
