@@ -1,0 +1,21 @@
+<taglib xmlns="https://jakarta.ee/xml/ns/jakartaee"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-jsptaglibrary_3_0.xsd"
+        version="3.0">
+
+    <tlib-version>1.0</tlib-version>
+    <short-name>webpack</short-name>
+
+    <function>
+        <name>css</name>
+        <function-class>io.github.bookstore.jakarta.webpack.WebpackJspTag</function-class>
+        <function-signature>java.lang.String css(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>javascript</name>
+        <function-class>io.github.bookstore.jakarta.webpack.WebpackJspTag</function-class>
+        <function-signature>java.lang.String javascript(java.lang.String)</function-signature>
+    </function>
+
+</taglib>
