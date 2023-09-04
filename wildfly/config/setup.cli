@@ -6,5 +6,8 @@ embed-server --std-out=echo
 # Show runtime info
 version
 
+# Set production profile
+/system-property=profile:add(value=production)
+
 # Stop the embedded server
 stop-embedded-server

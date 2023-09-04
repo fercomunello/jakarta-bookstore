@@ -19,5 +19,8 @@
     "webpack-dev-server": "^4.15.1",
     "webpack-manifest-plugin": "^5.0.0",
     "webpack-nano": "^1.1.1"
+  },
+  "dependencies": {
+    "htmx.org": "^1.9.5"
   }
 }

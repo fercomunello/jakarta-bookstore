@@ -6,6 +6,9 @@ embed-server --std-out=echo
 # Show runtime info
 version
 
+# Set development profile
+/system-property=profile:add(value=development)
+
 # Enable reloading JSP pages on-the-fly
 /subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=development,value=true)
 

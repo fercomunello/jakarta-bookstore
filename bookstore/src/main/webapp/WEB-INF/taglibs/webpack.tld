@@ -8,14 +8,20 @@
 
     <function>
         <name>css</name>
-        <function-class>io.github.bookstore.jakarta.webpack.WebpackJspTag</function-class>
+        <function-class>io.github.bookstore.jakarta.configuration.webpack.WebpackJspTag</function-class>
         <function-signature>java.lang.String css(java.lang.String)</function-signature>
     </function>
 
     <function>
         <name>javascript</name>
-        <function-class>io.github.bookstore.jakarta.webpack.WebpackJspTag</function-class>
+        <function-class>io.github.bookstore.jakarta.configuration.webpack.WebpackJspTag</function-class>
         <function-signature>java.lang.String javascript(java.lang.String)</function-signature>
+    </function>
+
+    <function>
+        <name>png</name>
+        <function-class>io.github.bookstore.jakarta.configuration.webpack.WebpackJspTag</function-class>
+        <function-signature>java.lang.String png(java.lang.String)</function-signature>
     </function>
 
 </taglib>

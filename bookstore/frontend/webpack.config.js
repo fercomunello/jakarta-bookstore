@@ -1,20 +1,26 @@
-const path = require('path');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-
 const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
-const {WebpackManifestPlugin} = require('webpack-manifest-plugin');
 
+const {WebpackManifestPlugin} = require('webpack-manifest-plugin');
 const production = process.env.NODE_ENV === 'production';
+
+const path = require('path');
 
 const config = {
     entry: {
-        "dashboard": [
-            "./src/dashboard/script.ts",
-            "./src/dashboard/style.css",
+        "main.bundle": [
+            "./src/libs/htmx.js",
+        ],
+        "layout.bundle": [
+            "./src/layout/reset.css",
+            "./src/layout/root.css",
+            "./src/layout/header.css",
+            "./src/layout/container.css",
+            "./src/layout/footer.css",
         ]
     },
     output: {
-        filename: "[name]" + (production ? ".[contenthash]" : "") + ".js",
+        filename: "[name].[contenthash].js",
         path: path.resolve(__dirname, "../target/ROOT/dist"),
         clean: true
     },
@@ -41,8 +47,8 @@ const config = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: "[name]" + (production ? ".[contenthash]" : "") + ".css",
-            chunkFilename: "[id]" + (production ? ".[contenthash]" : "") + ".css",
+            filename: "[name].[contenthash].css",
+            chunkFilename: "[id].[contenthash].css",
         }),
         new WebpackManifestPlugin({
             fileName: path.resolve(__dirname, "../target/ROOT/META-INF/webpack.manifest.json"),

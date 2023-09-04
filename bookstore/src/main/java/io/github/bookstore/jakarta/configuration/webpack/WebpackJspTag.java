@@ -1,4 +1,4 @@
-package io.github.bookstore.jakarta.webpack;
+package io.github.bookstore.jakarta.configuration.webpack;
 
 public interface WebpackJspTag {
 
@@ -9,6 +9,11 @@ public interface WebpackJspTag {
 
     static String javascript(String fileName) {
         fileName = fileName + ".js";
+        return WebpackManifest.getResource(fileName);
+    }
+
+    static String png(String fileName) {
+        fileName = fileName + ".png";
         return WebpackManifest.getResource(fileName);
     }
 

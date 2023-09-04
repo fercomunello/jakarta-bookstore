@@ -1,0 +1,21 @@
+:root {
+    --container-width: 90vw;
+}
+
+.container {
+    --container-margin-y: 1.3rem;
+    width: var(--container-width);
+    margin: var(--container-margin-y) calc((100vw - var(--container-width)) / 2);
+    height: auto;
+}
+
+@media (max-width: 650px) {
+    :root {
+        --container-width: 95vw;
+    }
+
+    .container {
+        width: var(--container-width);
+        margin: var(--container-margin-y) 1rem;
+    }
+}
