@@ -36,6 +36,7 @@ build/
 
 ### Project ###
 wildfly/sandbox/
+bookstore/frontend/maven/
 
 ### Node.js ###
 node_modules
