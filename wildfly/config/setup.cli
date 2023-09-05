@@ -9,5 +9,7 @@ version
 # Set production profile
 /system-property=profile:add(value=production)
 
+/subsystem=undertow/servlet-container=default:write-attribute(name=allow-non-standard-wrappers,value=true)
+
 # Stop the embedded server
 stop-embedded-server

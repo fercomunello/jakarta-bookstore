@@ -12,5 +12,7 @@ version
 # Enable reloading JSP pages on-the-fly
 /subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=development,value=true)
 
+/subsystem=undertow/servlet-container=default:write-attribute(name=allow-non-standard-wrappers,value=true)
+
 # Stop the embedded server
 stop-embedded-server
