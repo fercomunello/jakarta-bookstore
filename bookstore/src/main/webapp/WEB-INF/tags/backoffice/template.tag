@@ -1,10 +1,11 @@
 <%@ tag pageEncoding="UTF-8" description="Backoffice JSP Template" %>
-
 <%@ tag import="static io.github.bookstore.jakarta.servlet.BrowserAction.*" %>
+
 <%@ taglib prefix="webpack" uri="/WEB-INF/taglibs/webpack.tld" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <%@ attribute name="title" description="The page title displayed in the browser tab."
-              type="java.lang.String" required="true" %>
+              type="java.lang.String" required="false" %>
 
 <%@ attribute name="metatags" description="Page specific meta tags for SEO optimization. "
               fragment="true" required="false" %>
@@ -27,24 +28,33 @@
 
         <script type="text/javascript" src="${webpack:javascript('main.bundle')}" defer></script>
 
-        <title>${title} | Backoffice</title>
+        <c:choose>
+            <c:when test="${not empty title}">
+                <title>${title} | Backoffice</title>
+            </c:when>
+            <c:otherwise>
+                <title>Backoffice</title>
+            </c:otherwise>
+        </c:choose>
     </head>
 
     <body>
         <%@ include file="header.jsp" %> <% } %>
 
-    <% if (browserAction == XHR_REQUEST || browserAction == REQUEST) { %>
-        <main>
-            <div class="container">
-                <h1>${title}</h1>
-                <jsp:doBody />
-            </div>
-        </main>
-    <% } %>
+        <% if (browserAction == XHR_REQUEST || browserAction == REQUEST) { %>
+            <main>
+                <div class="container">
+                    <c:if test="${not empty title}">
+                        <h1>${title}</h1>
+                    </c:if>
+                    <jsp:doBody />
+                </div>
+            </main>
+        <% } %>
 
-    <% if (browserAction == REQUEST) { %>
-        <footer id="footer">
-            <p>&copy; ${year} - All rights reserved.</p>
-        </footer>
+        <% if (browserAction == REQUEST) { %>
+            <footer id="footer">
+                <p>&copy; ${year} - All rights reserved.</p>
+            </footer>
     </body>
 </html> <% } %>

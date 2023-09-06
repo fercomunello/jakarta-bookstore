@@ -1,7 +1,7 @@
 .header-dark-theme {
     --header-background-color: black;
     --header-link-color: white;
-    --header-link-hover: rgba(103, 106, 109, 0.5);
+    --header-link-hover: rgba(130, 131, 133, 0.5);
     --header-dash: #f85e5e;
     --header-shadow-color: rgba(0, 0, 0, 0.76);
 }
@@ -86,9 +86,11 @@
     padding: .6rem;
 }
 
-#menu a:hover {
-    background: var(--header-link-hover);
-    border-radius: 5px;
+@media (min-width: 686px) {
+    #menu a:hover {
+        background: var(--header-link-hover);
+        border-radius: 5px;
+    }
 }
 
 #btn-menu-mobile {
@@ -110,6 +112,7 @@
         visibility: hidden;
         overflow-y: hidden;
         z-index: 1000;
+        border-radius: 0 0 0 10px;
     }
 
     #nav {
@@ -119,14 +122,17 @@
     #nav.active #menu {
         visibility: visible;
         overflow-y: auto;
-        height: calc(100vh - var(--header-height));
+        height: auto;
+    }
+
+    #menu li:hover {
+        background: var(--header-link-hover);
     }
 
     #menu a {
         display: block;
-        padding: .8rem .4rem;
-        margin: 0 1rem;
-        border-bottom: 2px solid rgba(0, 0, 0, .5);
+        margin-right: 3rem;
+        margin-left: 6px;
     }
 
     #btn-menu-mobile {

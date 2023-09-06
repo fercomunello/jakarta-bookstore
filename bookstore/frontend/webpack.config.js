@@ -10,6 +10,7 @@ const config = {
     entry: {
         "main.bundle": [
             "./src/libs/htmx.js",
+            "./src/layout/header.menu.ts"
         ],
         "layout.bundle": [
             "./src/layout/reset.css",

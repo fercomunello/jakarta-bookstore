@@ -5,7 +5,7 @@
         <button id="btn-menu-mobile"
                 data-aria-label-open-menu="open_menu"
                 data-aria-label-close-menu="close_menu"
-                aria-label="open_menu}" aria-controls="menu"
+                aria-label="open_menu" aria-controls="menu"
                 aria-expanded="false" aria-haspopup="true">Menu
             <span id="hamburger"></span>
         </button>
