@@ -1,6 +1,6 @@
 package io.github.bookstore.jakarta.configuration.webpack;
 
-import io.github.bookstore.jakarta.configuration.JakartaApplication;
+import io.github.bookstore.jakarta.configuration.JakartaStartup;
 import io.github.bookstore.jakarta.configuration.JakartaProfile;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
@@ -30,7 +30,7 @@ public class WebpackManifest {
     private static final Map<String, String> WEBPACK_BUNDLES = new HashMap<>();
 
     public static void load() {
-        if (JakartaApplication.PROFILE == JakartaProfile.PRODUCTION && !WEBPACK_BUNDLES.isEmpty()) {
+        if (JakartaStartup.PROFILE == JakartaProfile.PRODUCTION && !WEBPACK_BUNDLES.isEmpty()) {
             LOG.warnf("The attempt to reload webpack entries in production was ignored.");
             return;
         }
@@ -39,7 +39,7 @@ public class WebpackManifest {
             LOG.errorf("%s file not found in the classloader.", WEBPACK_MANIFEST);
             return;
         }
-        if (JakartaApplication.PROFILE == JakartaProfile.DEVELOPMENT) {
+        if (JakartaStartup.PROFILE == JakartaProfile.DEVELOPMENT) {
             try {
                 final FileTime lastModifiedTime = Files.getLastModifiedTime(
                         Path.of(resource.getPath()), LinkOption.NOFOLLOW_LINKS
@@ -69,7 +69,7 @@ public class WebpackManifest {
                             return WEBPACK_BUNDLE_DIR + '/' + hashedFileName;
                         }
                     };
-                    if (JakartaApplication.PROFILE == JakartaProfile.DEVELOPMENT) {
+                    if (JakartaStartup.PROFILE == JakartaProfile.DEVELOPMENT) {
                         WEBPACK_BUNDLES.entrySet().removeIf(entry -> !entries.containsKey(entry.getKey()));
                         if (WEBPACK_BUNDLES.containsKey(key)) {
                             WEBPACK_BUNDLES.replace(key, hashedFilePath.get());
@@ -85,7 +85,7 @@ public class WebpackManifest {
     }
 
     static String getResource(final String fileName) {
-        if (JakartaApplication.PROFILE == JakartaProfile.DEVELOPMENT) {
+        if (JakartaStartup.PROFILE == JakartaProfile.DEVELOPMENT) {
             WebpackManifest.load();
         }
         final String resource = WEBPACK_BUNDLES.get(fileName);

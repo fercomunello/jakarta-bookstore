@@ -9,7 +9,9 @@ version
 # Set production profile
 /system-property=profile:add(value=production)
 
-/subsystem=undertow/servlet-container=default:write-attribute(name=allow-non-standard-wrappers,value=true)
+# Set JSP target JVM version
+/subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=source-vm,value=17)
+/subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=target-vm,value=17)
 
 # Stop the embedded server
 stop-embedded-server

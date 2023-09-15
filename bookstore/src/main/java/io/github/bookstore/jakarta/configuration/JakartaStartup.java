@@ -7,7 +7,7 @@ import jakarta.ejb.Startup;
 
 @Startup
 @Singleton
-public class JakartaApplication {
+public class JakartaStartup {
 
     public static final JakartaProfile PROFILE;
 

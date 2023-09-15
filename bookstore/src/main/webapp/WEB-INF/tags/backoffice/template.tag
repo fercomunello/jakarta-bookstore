@@ -1,8 +1,4 @@
 <%@ tag pageEncoding="UTF-8" description="Backoffice JSP Template" %>
-<%@ tag import="static io.github.bookstore.jakarta.servlet.BrowserAction.*" %>
-
-<%@ taglib prefix="webpack" uri="/WEB-INF/taglibs/webpack.tld" %>
-<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <%@ attribute name="title" description="The page title displayed in the browser tab."
               type="java.lang.String" required="false" %>
@@ -10,10 +6,14 @@
 <%@ attribute name="metatags" description="Page specific meta tags for SEO optimization. "
               fragment="true" required="false" %>
 
-<jsp:useBean id="browserAction" scope="request" type="io.github.bookstore.jakarta.servlet.BrowserAction" />
+<%@ taglib prefix="webpack" uri="/WEB-INF/taglibs/webpack.tld" %>
+<%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<% if (browserAction == REQUEST) { %>
-<jsp:useBean id="year" scope="request" type="java.lang.Integer" />
+<jsp:useBean id="htmxRequest" scope="request" type="java.lang.Boolean" />
+
+<% if (!htmxRequest) { %>
+<jsp:useBean id="template" scope="request"
+             type="io.github.bookstore.jakarta.backoffice.BackofficeTemplate" />
 
 <!DOCTYPE html>
 <html lang="en">
@@ -39,22 +39,21 @@
     </head>
 
     <body>
-        <%@ include file="header.jsp" %> <% } %>
+        <%@ include file="header.jsp" %>
 
-        <% if (browserAction == XHR_REQUEST || browserAction == REQUEST) { %>
-            <main>
-                <div class="container">
-                    <c:if test="${not empty title}">
-                        <h1>${title}</h1>
-                    </c:if>
-                    <jsp:doBody />
-                </div>
-            </main>
-        <% } %>
+        <main>
+            <div id="content" class="container"><% } %>
+                <c:if test="${not empty title}">
+                    <h1>${title}</h1>
+                </c:if>
+                <jsp:doBody />
+            <% if (!htmxRequest) { %>
+            </div>
+        </main><% } %>
 
-        <% if (browserAction == REQUEST) { %>
+        <% if (!htmxRequest) { %>
             <footer id="footer">
-                <p>&copy; ${year} - All rights reserved.</p>
+                <p>&copy; ${template.year} - All rights reserved.</p>
             </footer>
     </body>
 </html> <% } %>
