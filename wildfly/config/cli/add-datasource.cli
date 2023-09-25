@@ -1,0 +1,18 @@
+module add --name=${env.JDBC_DRIVER_MODULE} --resources=jars/${env.JDBC_DRIVER_JAR} \
+ --dependencies=jakarta.transaction.api
+
+/subsystem=datasources/jdbc-driver=${env.JDBC_DRIVER}:add(\
+    driver-module-name=${env.JDBC_DRIVER_MODULE},\
+    driver-class-name=${env.JDBC_DRIVER_CLASS}\
+)
+
+data-source add --jndi-name=java:/${env.DATASOURCE_NAME} --name=${env.DATASOURCE_NAME} \
+ --connection-url=${env.JDBC_URL} --driver-name=${env.JDBC_DRIVER} \
+ --user-name=${env.DATASOURCE_USERNAME} --password=${env.DATASOURCE_PASSWORD} \
+ --transaction-isolation=${env.JDBC_TX_ISOLATION_LEVEL} \
+ --min-pool-size=${env.JDBC_MIN_POOL_SIZE} --max-pool-size=${env.JDBC_MAX_POOL_SIZE} \
+ --pool-use-strict-min=${env.JDBC_POOL_USE_STRICT} --pool-fair=${env.JDBC_POOL_FAIR} \
+ --spy=${env.JDBC_SPY} --statistics-enabled=${env.JDBC_STATISTICS_ENABLED} \
+ --track-statements=${env.JDBC_TRACK_STATEMENTS} \
+ --use-ccm=${env.JDBC_USE_CCM} \
+ --use-fast-fail=${env.JDBC_USE_FAST_FAIL}

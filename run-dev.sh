@@ -80,6 +80,52 @@ function rm_non_unix_scripts() {
   cd - > /dev/null
 }
 
+function is_url_reachable() {
+  local host="$1"
+  host="${host//http:\/\//}"
+  host="${host//https:\/\//}"
+  host="${host%%/*}"
+  if ping -c 1 "$host" &> /dev/null;
+    then return 0
+    else return 1
+  fi
+}
+
+function download_file() {
+  local -r url=$1
+  local -r fallback_url=$2
+  local fallback_download=false
+
+  echo -e "\n=> Downloading $(basename "${url}")"
+  if is_url_reachable "${url}"; then
+    local -r http_status=$(curl -L -o /dev/null --silent --head \
+      --write-out '%{http_code}' "${url}")
+    if [[ ${http_status} -eq 200 ]]; then
+      curl -L -O "${url}"
+      echo "Download succeeded."
+    else
+      echo "Failed to download ${url} (HTTP status code: ${http_status})."
+      [[ -n ${fallback_url} ]] && fallback_download=true
+    fi
+  else
+    echo "Host ${url} is not reachable. Download failed."
+    [[ -n ${fallback_url} ]] && fallback_download=true
+  fi
+
+  if "$fallback_download"; then
+    download_file "${fallback_url}"
+  fi
+}
+
+function download_jdbc_driver() {
+  local -r jar_file=${JDBC_DRIVER_JAR}
+  if [ ! -f "${jar_file}" ]; then
+    download_file "${JDBC_DRIVER_URL}" "${JDBC_DRIVER_FALLBACK_URL}"
+  else
+    echo -e "\n=> ${jar_file} is cached, skipping download."
+  fi
+}
+
 function provision_wildfly() {
   if [ ! -d "downloads" ]; then
     mkdir downloads
@@ -120,6 +166,8 @@ function provision_wildfly() {
      --verbose --layers=$WILDFLY_LAYERS,$MIDDLEWARE_LAYERS,$JAKARTA_EE_LAYERS,$MICROPROFILE_LAYERS
   fi
 
+  download_jdbc_driver
+
   cd ..
   mkdir server && cd server
   cp -v -r ../downloads/wildfly-$WILDFLY_VERSION/* .
@@ -143,13 +191,13 @@ function run_jboss_cli() {
   echo ""
   echo "=> Run ./jboss-cli.sh commands"
   echo ""
-  rm -rf server/bin/config/
-  mkdir server/bin/config/
-  cp -v ../config/*.cli server/bin/config/
+  rm -rf server/bin/cli/
+  mkdir -p server/bin/cli/jars
+  cp -v ../config/cli/*.cli server/bin/cli/
+  cp -v downloads/*.jar server/bin/cli/jars
 
   cd server/bin
-  sh jboss-cli.sh --file="config/setup-sandbox.cli"
-  rm -rf config/
+  sh jboss-cli.sh --file="cli/run-batch-sandbox.cli" --resolve-parameter-values
 
   cd - > /dev/null
 }
@@ -306,6 +354,10 @@ function redeploy_apps() {
   cd - > /dev/null
 }
 
+function run_postgres() {
+  sh ../../run-postgres.sh
+}
+
 function stop_wildfly() {
   undeploy_apps 'silent'
 
@@ -372,6 +424,7 @@ function print_help() {
     echo -e "[\033[1;34md\033[0m] - Deploy all applications."
     echo -e "[\033[1;34mu\033[0m] - Undeploy all applications."
   fi
+  echo -e "[\033[1;34mr\033[0m] - Run or re-run the database container."
   echo -e "[\033[1;34ms\033[0m] - Restart application server."
   echo -e "[\033[1;34ml\033[0m] - Reload application server configurations."
   echo -e "[\033[1;34mv\033[0m] - Show application server version and other info."
@@ -392,9 +445,11 @@ function launch_prompt() {
       else
         press_to="\r\033[KPress \033[1;34m[d]\033[0m to deploy"
       fi
-      press_to+=", \033[1;34m[u]\033[0m to undeploy, \033[1;34m[q]\033[0m to quit, \033[1;34m[h]\033[0m for more options."
+      press_to+=", \033[1;34m[u]\033[0m to undeploy, \033[1;34m[r]\033[0m to reset database"
+      press_to+=", \033[1;34m[q]\033[0m to quit, \033[1;34m[h]\033[0m for more options."
     else
       press_to+="\r\033[KPress \033[1;34m[q]\033[0m to quit"
+      press_to+=", \033[1;34m[r]\033[0m to reset database"
       press_to+=", \033[1;34m[s]\033[0m to restart, \033[1;34m[l]\033[0m to reload"
       press_to+=", \033[1;34m[h]\033[0m for more options."
     fi
@@ -407,6 +462,9 @@ function launch_prompt() {
 
     if [[ "$reply" != "" ]]; then
       case "$reply" in
+         r)
+           run_postgres
+           ;;
          d)
            if test ${DEPLOY} = true; then
              redeploy_apps
@@ -459,6 +517,12 @@ function main() {
   adjust_window
 
   cd wildfly
+
+  source config/environment/datasource-env.sh
+  export JDBC_TRACK_STATEMENTS=true
+  export JDBC_STATISTICS_ENABLED=true
+  export JDBC_SPY=true
+
   if [ ! -d "sandbox" ]; then
     mkdir sandbox
   fi
@@ -480,6 +544,7 @@ function main() {
     deploy_apps_silent
   fi
 
+  run_postgres
   capture_logs_async
   start_wildfly_async
   wait_server_startup

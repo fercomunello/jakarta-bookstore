@@ -6,12 +6,11 @@ embed-server --std-out=echo
 # Show runtime info
 version
 
-# Set development profile
-/system-property=profile:add(value=development)
+# Set production profile
+/system-property=profile:add(value=production)
 
-# Enable reloading JSP pages on-the-fly
-/subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=development,value=true)
-/subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=modification-test-interval,value=1)
+# Add datasource
+run-batch --file=cli/add-datasource.cli --verbose
 
 # JSP: Set target JVM version
 /subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=source-vm,value=17)
@@ -20,6 +19,7 @@ version
 # JSP: Tuning and optimizations
 /subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=trim-spaces,value=true)
 /subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=optimize-scriptlets,value=true)
+/subsystem=undertow/servlet-container=default/setting=jsp:write-attribute(name=generate-strings-as-char-arrays,value=true)
 
 # Stop the embedded server
 stop-embedded-server
