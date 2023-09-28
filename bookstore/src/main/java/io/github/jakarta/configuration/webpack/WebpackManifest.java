@@ -1,7 +1,7 @@
 package io.github.jakarta.configuration.webpack;
 
-import io.github.jakarta.configuration.JakartaStartup;
 import io.github.jakarta.configuration.JakartaProfile;
+import io.github.jakarta.configuration.JakartaStartup;
 import jakarta.json.Json;
 import jakarta.json.JsonObject;
 import jakarta.json.JsonString;
@@ -15,8 +15,10 @@ import java.nio.file.Files;
 import java.nio.file.LinkOption;
 import java.nio.file.Path;
 import java.nio.file.attribute.FileTime;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
 public class WebpackManifest {
@@ -26,8 +28,8 @@ public class WebpackManifest {
     private static final String WEBPACK_BUNDLE_DIR = "/dist";
     private static final String WEBPACK_MANIFEST = "/META-INF/webpack.manifest.json";
 
-    private static FileTime WEBPACK_BUNDLES_LMT;
-    private static final Map<String, String> WEBPACK_BUNDLES = new HashMap<>();
+    private static final AtomicReference<FileTime> WEBPACK_BUNDLES_LMT = new AtomicReference<>();
+    private static final ConcurrentMap<String, String> WEBPACK_BUNDLES = new ConcurrentHashMap<>();
 
     public static void load() {
         if (JakartaStartup.PROFILE == JakartaProfile.PRODUCTION && !WEBPACK_BUNDLES.isEmpty()) {
@@ -44,10 +46,10 @@ public class WebpackManifest {
                 final FileTime lastModifiedTime = Files.getLastModifiedTime(
                         Path.of(resource.getPath()), LinkOption.NOFOLLOW_LINKS
                 );
-                if (lastModifiedTime.equals(WEBPACK_BUNDLES_LMT)) {
+                if (lastModifiedTime.equals(WEBPACK_BUNDLES_LMT.get())) {
                     return;
                 }
-                WEBPACK_BUNDLES_LMT = lastModifiedTime;
+                WEBPACK_BUNDLES_LMT.set(lastModifiedTime);
                 LOG.infof("%s file has been changed, updating webpack bundles hash map.", WEBPACK_MANIFEST);
             } catch (IOException ignored) {
             }
