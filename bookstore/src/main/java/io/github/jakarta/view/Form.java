@@ -60,8 +60,9 @@ public abstract class Form<T extends Entity, BeanInstance> extends View {
                 .path(entity.uuid().toString())
                 .build();
 
-            return Response.status(Status.SEE_OTHER)
+            return Response.status(Status.BAD_REQUEST)
                 .location(uri)
+                .entity(view().get())
                 .build();
         }
 
