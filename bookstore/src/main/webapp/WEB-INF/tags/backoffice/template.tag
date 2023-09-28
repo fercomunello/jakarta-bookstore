@@ -13,7 +13,7 @@
 
 <% if (!htmxRequest) { %>
 <jsp:useBean id="template" scope="request"
-             type="io.github.bookstore.jakarta.backoffice.BackofficeTemplate" />
+             type="io.github.jakarta.business.backoffice.BackofficeTemplate" />
 
 <!DOCTYPE html>
 <html lang="en">

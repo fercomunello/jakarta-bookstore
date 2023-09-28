@@ -13,7 +13,7 @@
         </developer>
     </developers>
 
-    <groupId>io.github.bookstore.jakarta</groupId>
+    <groupId>io.github.jakarta</groupId>
     <artifactId>bookstore</artifactId>
     <version>1.0-SNAPSHOT</version>
     <packaging>war</packaging>
@@ -22,6 +22,7 @@
         <!-- Java 17 LTS -->
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <compiler-plugin.version>3.11.0</compiler-plugin.version>
 
         <!-- Jakarta EE Platform -->
         <jakarta-ee.version>10</jakarta-ee.version>
@@ -31,15 +32,15 @@
         <!-- WildFly - Application Server: The Jakarta EE dependencies defined on any pom.xml file
         automatically inherits the version of implementations provided by WildFly, no need to specify each one -->
         <wildfly.version>29.0.0.Final</wildfly.version>
+        <war-plugin.version>3.3.2</war-plugin.version>
 
         <!-- Hibernate ORM - (optional) -->
+        <postgresql.version>42.6.0</postgresql.version>
         <hibernate-orm-core.version>6.2.6.Final</hibernate-orm-core.version>
 
         <!-- Testing Libraries -->
         <junit.version>5.9.2</junit.version>
-
-        <compiler-plugin.version>3.11.0</compiler-plugin.version>
-        <war-plugin.version>3.3.2</war-plugin.version>
+        <mockito.version>5.5.0</mockito.version>
 
         <!-- Node.js plugin -->
         <frontend-plugin.version>1.13.4</frontend-plugin.version>
@@ -96,6 +97,13 @@
         </dependency>
 
         <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>${postgresql.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
+        <dependency>
             <groupId>jakarta.mvc</groupId>
             <artifactId>jakarta.mvc-api</artifactId>
             <version>2.1.0</version>
@@ -141,15 +149,21 @@
         <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
+            <artifactId>junit-jupiter</artifactId>
             <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <version>${junit.version}</version>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

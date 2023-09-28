@@ -9,8 +9,10 @@
                 aria-expanded="false" aria-haspopup="true">Menu
             <span id="hamburger"></span>
         </button>
-        <ul id="menu" role="menu" hx-boost="true" hx-target="#content" hx-indicator=".progress">
+        <ul id="menu" role="menu" hx-boost="true" hx-target="#content">
             <li><a href="${pageContext.request.contextPath}/bookstore/backoffice/dashboard" lang="en">Home</a></li>
+            <li><a href="${pageContext.request.contextPath}/bookstore/backoffice/authors">Authors</a></li>
+            <li><a href="${pageContext.request.contextPath}/bookstore/backoffice/authors/new">New Author</a></li>
         </ul>
     </nav>
 </header>
