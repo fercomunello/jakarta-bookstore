@@ -9,9 +9,9 @@
 <%@ taglib prefix="webpack" uri="/WEB-INF/taglibs/webpack.tld" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<jsp:useBean id="htmxRequest" scope="request" type="java.lang.Boolean" />
+<jsp:useBean id="hxBoosted" scope="request" type="java.lang.Boolean" />
 
-<% if (!htmxRequest) { %>
+<% if (!hxBoosted) { %>
 <jsp:useBean id="template" scope="request"
              type="io.github.jakarta.business.backoffice.BackofficeTemplate" />
 
@@ -47,11 +47,11 @@
                     <h1>${title}</h1>
                 </c:if>
                 <jsp:doBody />
-            <% if (!htmxRequest) { %>
+            <% if (!hxBoosted) { %>
             </div>
         </main><% } %>
 
-        <% if (!htmxRequest) { %>
+        <% if (!hxBoosted) { %>
             <footer id="footer">
                 <p>&copy; ${template.year} - All rights reserved.</p>
             </footer>

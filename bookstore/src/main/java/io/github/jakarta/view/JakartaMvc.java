@@ -2,6 +2,7 @@ package io.github.jakarta.view;
 
 import io.github.jakarta.business.backoffice.BackofficeTemplate;
 import io.github.jakarta.business.bookstore.BookstoreTemplate;
+import io.github.jakarta.view.htmx.HxFlag;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
@@ -32,17 +33,16 @@ public class JakartaMvc extends JspViewEngine {
         Entrypoint.resolve(context.getView()).ifPresent(entrypoint -> {
             final HttpServletRequest request = context.getRequest(HttpServletRequest.class);
 
-            final boolean htmxRequest = Boolean.parseBoolean(request.getHeader("HX-Boosted"));
-            context.getModels().put("htmxRequest", htmxRequest);
-
-            if (!htmxRequest) {
-                context.getModels().put("template",
-                        switch (entrypoint) {
-                            case BOOKSTORE -> bookstoreTemplate.get();
-                            case BACKOFFICE -> backofficeTemplate.get();
-                        }
-                );
-            }
+            context.getModels().put("hxBoosted",
+                new HxFlag(HxFlag.Header.HX_BOOSTED, request)
+                    .activeOrElse(() ->
+                        context.getModels().put("template",
+                            switch (entrypoint) {
+                                case BOOKSTORE -> bookstoreTemplate.get();
+                                case BACKOFFICE -> backofficeTemplate.get();
+                            }
+                    ))
+            );
         });
 
         super.processView(context);

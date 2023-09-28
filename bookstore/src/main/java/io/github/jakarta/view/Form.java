@@ -1,14 +1,15 @@
 package io.github.jakarta.view;
 
 import io.github.jakarta.Bean;
-import io.github.jakarta.business.validation.ValidationResult;
 import io.github.jakarta.business.validation.ValidatedGroup;
+import io.github.jakarta.business.validation.ValidationResult;
 import io.github.jakarta.entity.Entity;
 import io.github.jakarta.entity.Result;
+import io.github.jakarta.view.htmx.HxFlag;
 import io.github.jakarta.view.model.FormBean;
 import jakarta.enterprise.inject.Instance;
 import jakarta.inject.Inject;
-import jakarta.mvc.MvcContext;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
@@ -21,16 +22,16 @@ import java.util.function.Supplier;
 public abstract class Form<T extends Entity, BeanInstance> extends View {
 
     @Inject
-    protected Instance<BeanInstance> beanInstance;
+    private Instance<BeanInstance> beanInstance;
 
     @Inject
     private Instance<FormBean> formBeanInstance;
 
-    @Inject
-    protected MvcContext context;
+    @Context
+    private UriInfo uriInfo;
 
     @Context
-    protected UriInfo uriInfo;
+    private HttpServletResponse response;
 
     public Response ok(final Supplier<Result<T>> resultSupplier) {
         if (!this.formBeanInstance.get().isCached()) {
@@ -56,12 +57,10 @@ public abstract class Form<T extends Entity, BeanInstance> extends View {
                 form.setValidations(validations);
             });
 
-            final URI uri = this.uriInfo.getAbsolutePathBuilder()
-                .path(entity.uuid().toString())
-                .build();
+            new HxFlag(HxFlag.Header.HX_REPLACE_URL, false)
+                .addHeader(this.response);
 
             return Response.status(Status.BAD_REQUEST)
-                .location(uri)
                 .entity(view().get())
                 .build();
         }
