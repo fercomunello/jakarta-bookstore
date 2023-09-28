@@ -9,7 +9,8 @@ const path = require('path');
 const config = {
     entry: {
         "main.bundle": [
-            "./src/libs/htmx.js",
+            "./src/libs/htmx/htmx.js",
+            "./src/libs/htmx/ext/hx.head.support.js",
             "./src/layout/header.menu.ts"
         ],
         "layout.bundle": [
@@ -18,6 +19,9 @@ const config = {
             "./src/layout/header.css",
             "./src/layout/container.css",
             "./src/layout/footer.css",
+        ],
+        "demo.bundle": [
+            "./src/components/demo.css",
         ]
     },
     output: {
