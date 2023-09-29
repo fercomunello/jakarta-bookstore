@@ -202,8 +202,8 @@
                 <version>${frontend-plugin.version}</version>
 
                 <configuration>
-                    <workingDirectory>frontend/</workingDirectory>
-                    <installDirectory>frontend/maven</installDirectory>
+                    <workingDirectory>webpack/</workingDirectory>
+                    <installDirectory>webpack/maven</installDirectory>
                     <testFailureIgnore>true</testFailureIgnore>
                 </configuration>
 
