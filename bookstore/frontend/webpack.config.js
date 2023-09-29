@@ -1,5 +1,5 @@
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CssMinimizerPlugin = require("css-minimizer-webpack-plugin");
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 
 const {WebpackManifestPlugin} = require('webpack-manifest-plugin');
 const production = process.env.NODE_ENV === 'production';
@@ -8,37 +8,34 @@ const path = require('path');
 
 const config = {
     entry: {
-        "main.bundle": [
-            "./src/libs/htmx/htmx.js",
-            "./src/libs/htmx/ext/hx.head.support.js",
-            "./src/layout/header.menu.ts"
+        'main.bundle': [
+            './src/javascript/libs/htmx/htmx.js',
+            './src/javascript/libs/htmx/htmx.ext.js',
+            './src/javascript/header.menu.ts',
         ],
-        "layout.bundle": [
-            "./src/layout/reset.css",
-            "./src/layout/root.css",
-            "./src/layout/header.css",
-            "./src/layout/container.css",
-            "./src/layout/footer.css",
-        ],
-        "demo.bundle": [
-            "./src/components/demo.css",
+        'layout.bundle': [
+            './src/css/layout/base.scss',
         ]
     },
     output: {
-        filename: "[name].[contenthash].js",
-        path: path.resolve(__dirname, "../target/ROOT/dist"),
+        filename: '[name].[contenthash].js',
+        path: path.resolve(__dirname, '../target/ROOT/dist'),
         clean: true
     },
     module: {
         rules: [
             {
                 test: /\.(ts)$/i,
-                loader: "ts-loader",
-                exclude: ["/node_modules/"],
+                loader: 'ts-loader',
+                exclude: '/node_modules/',
             },
             {
-                test: /\.css$/,
-                use: [MiniCssExtractPlugin.loader, "css-loader"],
+                test: /\.s[ac]ss$/i,
+                use: [
+                    MiniCssExtractPlugin.loader,
+                    'css-loader',
+                    'sass-loader'
+                ],
             },
         ],
     },
@@ -52,16 +49,16 @@ const config = {
     },
     plugins: [
         new MiniCssExtractPlugin({
-            filename: "[name].[contenthash].css",
-            chunkFilename: "[id].[contenthash].css",
+            filename: '[name].[contenthash].css',
+            chunkFilename: '[id].[contenthash].css',
         }),
         new WebpackManifestPlugin({
-            fileName: path.resolve(__dirname, "../target/ROOT/META-INF/webpack.manifest.json"),
-            publicPath: ""
+            fileName: path.resolve(__dirname, '../target/ROOT/META-INF/webpack.manifest.json'),
+            publicPath: ''
         })
     ],
     resolve: {
-        extensions: [".ts", ".js", "..."],
+        extensions: ['.ts', '.js', '...'],
     },
     watchOptions: {
         poll: 100,
@@ -71,9 +68,9 @@ const config = {
 
 module.exports = () => {
     if (production) {
-        config.mode = "production";
+        config.mode = 'production';
     } else {
-        config.mode = "development";
+        config.mode = 'development';
     }
     return config;
 };

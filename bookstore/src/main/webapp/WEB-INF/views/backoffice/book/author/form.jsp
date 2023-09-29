@@ -13,7 +13,6 @@
 <backoffice:template title="Book author">
 
     <jsp:attribute name="css">
-        <link rel="stylesheet" href="${webpack:css('demo.bundle')}">
     </jsp:attribute>
 
     <jsp:attribute name="javascript" />

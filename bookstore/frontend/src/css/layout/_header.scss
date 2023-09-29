@@ -1,0 +1,170 @@
+@import '../common/mixins';
+
+@mixin dark-header {
+    --header-background-color: black;
+    --header-link-color: white;
+    --header-link-hover: rgba(130, 131, 133, 0.5);
+    --header-dash: #f85e5e;
+    --header-box-shadow: rgba(0, 0, 0, 0.76);
+}
+
+@mixin light-header {
+    --header-background-color: #f1f1f1;
+    --header-link-color: black;
+    --header-link-hover: rgba(0, 0, 0, .08);
+    --header-dash: #1481cb;
+    --header-box-shadow: rgba(0, 0, 0, 0.29);
+}
+
+header {
+    @include dark-header;
+    background-color: var(--header-background-color);
+    box-shadow: 2px 1px 8px var(--header-box-shadow);
+
+    @include flex-row-center;
+    --header-height: 3.375rem; /* 54px */
+    justify-content: flex-start;
+    gap: 3rem;
+
+    min-height: var(--header-height);
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+
+    a {
+        color: var(--header-link-color);
+        user-select: none;
+    }
+
+    > #dashboard-link {
+        font-size: 1.6rem;
+        font-weight: 520;
+        transition: .2s;
+        position: relative;
+        margin-left: calc(((100vw - var(--container-width)) / 2) + 2rem);
+
+        &::before {
+            @include empty-content-abs;
+            background: url('images/favicon.png') no-repeat;
+            background-size: 2rem;
+            width: 2rem;
+            height: 2rem;
+            right: 8.1rem;
+            top: 3px;
+        }
+
+        &::after {
+            @include empty-content;
+            border-bottom: 0.2rem solid var(--header-dash);
+            width: 3rem;
+            border-radius: 5px;
+        }
+
+        &:hover {
+            transform: scale(1.15);
+        }
+    }
+
+    nav > button[id='menu-mobile'] {
+        display: none;
+    }
+
+    #menu {
+        display: flex;
+        gap: .5rem;
+
+        a {
+            padding: .6rem;
+
+            @media (min-width: 686px) {
+                &:hover {
+                    background: var(--header-link-hover);
+                    border-radius: 5px;
+                }
+            }
+        }
+    }
+
+    @media (max-width: 685px) {
+        justify-content: space-between;
+
+        > #dashboard-link {
+            &:hover {
+                transform: unset;
+            }
+
+            @media (max-width: 322px) {
+                &:before {
+                    display: none;
+                }
+            }
+        }
+
+        nav {
+            margin-right: 18px;
+
+            &.active #menu {
+                visibility: visible;
+                overflow-y: auto;
+                height: auto;
+            }
+
+            &.active button span {
+                border-top-color: transparent;
+
+                &::before {
+                    transform: rotate(135deg);
+                }
+
+                &::after {
+                    transform: rotate(-135deg);
+                    top: -7px;
+                }
+            }
+
+            button[id='menu-mobile'] {
+                @include flex-row-center;
+
+                padding: .5rem 1rem;
+                cursor: pointer;
+                column-gap: .5rem;
+
+                span {
+                    display: block;
+                    border-top: 2px solid;
+                    color: black;
+                    width: 20px;
+
+                    &::before, &::after {
+                        @include empty-content-relative;
+                        height: 2px;
+                        background-color: currentColor;
+                        margin-top: 4px;
+                        transition: .3s;
+                    }
+                }
+            }
+
+            #menu {
+                @include content-abs;
+                background-color: var(--header-background-color);
+                height: 0;
+                top: calc(var(--header-height) + 2rem);
+                transition: .5s;
+                visibility: hidden;
+                overflow-y: hidden;
+                z-index: 1000;
+                border-radius: 0 0 0 10px;
+
+                li:hover {
+                    background: var(--header-link-hover);
+                }
+
+                a {
+                    display: block;
+                    margin-right: 3rem;
+                    margin-left: 6px;
+                }
+            }
+        }
+    }
+}

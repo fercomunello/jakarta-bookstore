@@ -26,9 +26,9 @@ export function customEventCallback(event: Event, callback: EventListener): void
 }
 
 export function domReady(callback: Function): void {
-    if (document.readyState === "complete" || document.readyState === "interactive") {
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
         callback();
         return;
     }
-    document.addEventListener("DOMContentLoaded", callback());
+    document.addEventListener('DOMContentLoaded', callback());
 }

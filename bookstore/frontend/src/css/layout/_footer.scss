@@ -3,10 +3,8 @@
     width: var(--container-width);
     margin: var(--footer-margin-y) auto;
     height: auto;
-}
 
-@media (max-width: 650px) {
-    #footer {
+    @media (max-width: 650px) {
         width: 100vw;
         margin: var(--footer-margin-y) 1rem;
     }
