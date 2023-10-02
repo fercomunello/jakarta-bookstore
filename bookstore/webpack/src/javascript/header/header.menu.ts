@@ -1,6 +1,6 @@
-import {$} from './functions/dom';
+import {$, documentReady} from '../functions/dom';
 
-window.addEventListener('load',(): void => {
+documentReady((): void => {
     const menu = $('#menu-mobile') as HTMLButtonElement;
 
     menu.addEventListener('click', (event: MouseEvent) => toggleMenu(event));

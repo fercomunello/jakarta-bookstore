@@ -12,7 +12,7 @@
         <ul id="menu" role="menu" hx-boost="true" hx-target="#content">
             <li>
                 <a href="${pageContext.request.contextPath}/bookstore/backoffice/dashboard"
-                   lang="en">Home</a>
+                lang="en">Home</a>
             </li>
             <li>
                 <a href="${pageContext.request.contextPath}/bookstore/backoffice/authors">

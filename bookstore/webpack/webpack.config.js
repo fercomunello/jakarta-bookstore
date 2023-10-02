@@ -8,13 +8,15 @@ const path = require('path');
 
 const config = {
     entry: {
-        'main.bundle': [
+        'htmx.bundle': [
             './src/javascript/libs/htmx/htmx.js',
-            './src/javascript/libs/htmx/htmx.ext.js',
-            './src/javascript/header.menu.ts',
+            './src/javascript/libs/htmx/htmx.ext.js'
         ],
-        'layout.bundle': [
+        'layout.bundle':
             './src/css/layout/base.scss',
+        'header.bundle': [
+            './src/javascript/header/header.progress.bar.ts',
+            './src/javascript/header/header.menu.ts'
         ]
     },
     output: {

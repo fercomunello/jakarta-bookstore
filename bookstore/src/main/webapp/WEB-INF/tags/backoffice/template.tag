@@ -40,17 +40,20 @@
             </c:otherwise>
         </c:choose>
 
-        <link type="image/png" sizes="32x32" rel="icon" href="${webpack:png('favicon')}">
-        <link rel="stylesheet" href="${webpack:css('layout.bundle')}">
+        <% if (!hxBoosted) { %>
+        <link href="${webpack:png('favicon')}" sizes="32x32" type="image/png" rel="icon" hx-preserve="true">
+        <link href="${webpack:css('layout.bundle')}" rel="stylesheet" hx-preserve="true">
+
+        <script src="${webpack:javascript('htmx.bundle')}" defer hx-preserve="true"></script>
+        <script src="${webpack:javascript('header.bundle')}" defer hx-preserve="true"></script>
+        <% } %>
+
         <jsp:invoke fragment="css" />
-
-        <script type="text/javascript" src="${webpack:javascript('main.bundle')}" defer></script>
-
         <jsp:invoke fragment="javascript" />
     </head>
 
     <% if (!hxBoosted) { %>
-    <body hx-ext="head-support">
+    <body hx-ext="head-support" hx-indicator="#main-progress-bar">
         <%@ include file="header.jsp" %>
 
         <main>

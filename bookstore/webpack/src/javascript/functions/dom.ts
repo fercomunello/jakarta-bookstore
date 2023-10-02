@@ -1,8 +1,8 @@
-export function $(selector: string): HTMLElement | HTMLCollectionOf<Element> | Element | null {
+export function $(selector: string): Element {
     switch (selector.charAt(0)) {
         case '.':
             const classNames: string = selector.replace('.', ' ');
-            return document.getElementsByClassName(classNames) as HTMLCollectionOf<Element>;
+            return document.getElementsByClassName(classNames)[0];
         case '#':
             const elementId: string = selector.substring(1, selector.length);
             return document.getElementById(elementId) as HTMLElement;
@@ -10,12 +10,29 @@ export function $(selector: string): HTMLElement | HTMLCollectionOf<Element> | E
             if (selector.charAt(selector.length - 1) === '>') {
                 const tagName: string = selector.replace('<', '')
                     .replace('>', '');
-                return document.getElementsByTagName(tagName) as HTMLCollectionOf<Element>;
+                return document.getElementsByTagName(tagName)[0];
             }
-            return null;
-        default:
-            return document.querySelector(selector) as Element;
     }
+    return document.querySelector(selector) as Element;
+}
+
+export function $$(selector: string): HTMLCollectionOf<Element> {
+    switch (selector.charAt(0)) {
+        case '.':
+            const classNames: string = selector.replace('.', ' ');
+            return document.getElementsByClassName(classNames);
+        case '<':
+            if (selector.charAt(selector.length - 1) === '>') {
+                const tagName: string = selector.replace('<', '')
+                    .replace('>', '');
+                return document.getElementsByTagName(tagName);
+            }
+    }
+    return new HTMLCollection();
+}
+
+export function createElementAfterBegin(element: Element, html: string) {
+    element?.insertAdjacentHTML('afterbegin', html);
 }
 
 export function customEventCallback(event: Event, callback: EventListener): void {
@@ -25,10 +42,10 @@ export function customEventCallback(event: Event, callback: EventListener): void
     }
 }
 
-export function domReady(callback: Function): void {
-    if (document.readyState === 'complete' || document.readyState === 'interactive') {
-        callback();
-        return;
-    }
-    document.addEventListener('DOMContentLoaded', callback());
+export function documentReady(callback: () => void): void {
+    document.addEventListener('DOMContentLoaded', () => callback());
+}
+
+export function windowReady(callback: (event: Event) => void): void {
+    window.addEventListener('load', (event) => callback(event));
 }
