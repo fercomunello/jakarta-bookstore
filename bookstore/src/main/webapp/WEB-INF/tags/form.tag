@@ -11,7 +11,7 @@
               fragment="false" required="true" %>
 
 <form id="${id}" method="${method}"
-      action="${pageContext.request.contextPath}/bookstore/backoffice${action}"
+      action="${pageContext.request.contextPath}/bookstore${action}"
       hx-boost="true" hx-replace-url="true" hx-target="#content"
       hx-swap="innerHTML show:window:top">
 

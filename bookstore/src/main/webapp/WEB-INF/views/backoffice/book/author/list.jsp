@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" %>
-<%@ taglib tagdir="/WEB-INF/tags/backoffice" prefix="jakarta" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="jakarta" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <jsp:useBean id="authors" scope="request"

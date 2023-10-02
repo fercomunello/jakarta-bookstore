@@ -1,5 +1,5 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ taglib tagdir="/WEB-INF/tags/backoffice" prefix="jakarta" %>
+<%@ taglib tagdir="/WEB-INF/tags" prefix="jakarta" %>
 
 <jakarta:template title="Dashboard">
     <jsp:body>

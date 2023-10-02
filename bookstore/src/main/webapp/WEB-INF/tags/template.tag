@@ -54,7 +54,7 @@
 
     <% if (!hxBoosted) { %>
     <body hx-ext="head-support" hx-indicator="#main-progress-bar">
-        <%@ include file="header.jsp" %>
+        <%@ include file="layout/header.jsp" %>
 
         <main>
             <div id="content" class="container"> <% } %>

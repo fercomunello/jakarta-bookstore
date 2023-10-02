@@ -3,14 +3,12 @@
 <%@ page import="static io.github.jakarta.business.backoffice.author.Author.*" %>
 <%--@elvariable id="authorBean" type="io.github.jakarta.business.backoffice.author.AuthorForm.AuthorBean"--%>
 
-<%@ taglib tagdir="/WEB-INF/tags/backoffice" prefix="backoffice" %>
 <%@ taglib tagdir="/WEB-INF/tags" prefix="jakarta" %>
-
 <%@ taglib prefix="webpack" uri="/WEB-INF/taglibs/webpack.tld" %>
 
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
-<backoffice:template title="Book author">
+<jakarta:template title="Book author">
 
     <jsp:attribute name="css">
     </jsp:attribute>
@@ -20,7 +18,7 @@
     <jsp:body>
         <p>This is the book author page.</p> <br>
 
-        <backoffice:form action="/authors" method="POST" id="book-author">
+        <jakarta:form action="/backoffice/authors" method="POST" id="book-author">
             <jsp:body>
                 <jakarta:validationFeedback of="<%= Metadata.NAME.target() %>"/>
                 <jakarta:validationFeedback of="<%= Metadata.NOTABLE_WORK.target() %>" />
@@ -40,6 +38,6 @@
 
                 <button type="submit" form="book-author">Save</button>
             </jsp:body>
-        </backoffice:form>
+        </jakarta:form>
     </jsp:body>
-</backoffice:template>
+</jakarta:template>
