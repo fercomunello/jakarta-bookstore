@@ -12,7 +12,8 @@
 
 <form id="${id}" method="${method}"
       action="${pageContext.request.contextPath}/bookstore/backoffice${action}"
-      hx-boost="true" hx-target="#content" hx-replace-url="true">
+      hx-boost="true" hx-replace-url="true" hx-target="#content"
+      hx-swap="innerHTML show:window:top">
 
     <c:if test="${method eq 'PUT'}">
         <input name="_method" type="hidden" value="PUT">

@@ -25,10 +25,11 @@ header {
     --header-height: 3.375rem; /* 54px */
     justify-content: flex-start;
     gap: 3rem;
-
     min-height: var(--header-height);
     padding-top: 1rem;
     padding-bottom: 1rem;
+    position: sticky;
+    top: 0;
 
     a {
         color: var(--header-link-color);

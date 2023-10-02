@@ -1,6 +1,6 @@
 <header>
-    <a href="${pageContext.request.contextPath}/bookstore/backoffice" id="dashboard-link"
-        lang="en" hx-boost="true" hx-target="#content">Backoffice</a>
+    <a href="${pageContext.request.contextPath}/bookstore/backoffice" id="dashboard-link" lang="en"
+       hx-boost="true" hx-target="#content" hx-swap="innerHTML show:window:top">Backoffice</a>
     <nav>
         <button id="menu-mobile"
                 data-aria-label-open-menu="open_menu"
@@ -9,7 +9,9 @@
                 aria-expanded="false" aria-haspopup="true">Menu
             <span></span>
         </button>
-        <ul id="menu" role="menu" hx-boost="true" hx-target="#content">
+        <ul id="menu" role="menu"
+                hx-boost="true" hx-target="#content"
+                hx-swap="innerHTML show:window:top">
             <li>
                 <a href="${pageContext.request.contextPath}/bookstore/backoffice/dashboard"
                 lang="en">Home</a>
