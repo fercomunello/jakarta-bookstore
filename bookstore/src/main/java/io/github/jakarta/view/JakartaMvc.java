@@ -3,6 +3,7 @@ package io.github.jakarta.view;
 import io.github.jakarta.business.backoffice.BackofficeTemplate;
 import io.github.jakarta.business.bookstore.BookstoreTemplate;
 import io.github.jakarta.view.htmx.HxFlag;
+import io.github.jakarta.view.jsp.Jspc;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
@@ -32,6 +33,8 @@ public class JakartaMvc extends JspViewEngine {
     public void processView(final ViewEngineContext context) throws ViewEngineException {
         Entrypoint.resolve(context.getView()).ifPresent(entrypoint -> {
             final HttpServletRequest request = context.getRequest(HttpServletRequest.class);
+
+            context.getModels().put("invokeJspc", Jspc.checkRequestToken(request));
 
             context.getModels().put("hxBoosted",
                 new HxFlag(HxFlag.Header.HX_BOOSTED, request)

@@ -21,43 +21,57 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-public class WebpackManifest {
-
-    private static final Logger LOG = Logger.getLogger(WebpackManifest.class);
+public final class WebpackManifest implements Runnable {
 
     private static final String WEBPACK_BUNDLE_DIR = "/dist";
     private static final String WEBPACK_MANIFEST = "/META-INF/webpack.manifest.json";
 
-    private static final AtomicReference<FileTime> WEBPACK_BUNDLES_LMT = new AtomicReference<>();
-    private static final ConcurrentMap<String, String> WEBPACK_BUNDLES = new ConcurrentHashMap<>();
+    private final Logger logger;
 
-    public static void load() {
-        if (JakartaStartup.PROFILE == JakartaProfile.PRODUCTION && !WEBPACK_BUNDLES.isEmpty()) {
-            LOG.warnf("The attempt to reload webpack entries in production was ignored.");
+    private final ConcurrentMap<String, String> webpackBundles;
+    private final AtomicReference<FileTime> webpackBundlesLMT;
+
+    {
+        this.logger = Logger.getLogger(WebpackManifest.class);
+        this.webpackBundles = new ConcurrentHashMap<>();
+        this.webpackBundlesLMT = new AtomicReference<>();
+    }
+
+    @Override
+    public void run() {
+        reloadWebpackBundles();
+    }
+
+    private void reloadWebpackBundles() {
+        if (!this.webpackBundles.isEmpty() &&
+            JakartaStartup.PROFILE == JakartaProfile.PRODUCTION) {
+            this.logger.warnf(
+                "The attempt to reload webpack entries in production was ignored."
+            );
             return;
         }
         final URL resource = WebpackManifest.class.getResource(WEBPACK_MANIFEST);
         if (resource == null) {
-            LOG.errorf("%s file not found in the classloader.", WEBPACK_MANIFEST);
+            this.logger.errorf("%s file not found in the classloader.", WEBPACK_MANIFEST);
             return;
         }
         if (JakartaStartup.PROFILE == JakartaProfile.DEVELOPMENT) {
             try {
                 final FileTime lastModifiedTime = Files.getLastModifiedTime(
-                        Path.of(resource.getPath()), LinkOption.NOFOLLOW_LINKS
+                    Path.of(resource.getPath()), LinkOption.NOFOLLOW_LINKS
                 );
-                if (lastModifiedTime.equals(WEBPACK_BUNDLES_LMT.get())) {
+                if (lastModifiedTime.equals(webpackBundlesLMT.get())) {
                     return;
                 }
-                WEBPACK_BUNDLES_LMT.set(lastModifiedTime);
-                LOG.infof("%s file has been changed, updating webpack bundles hash map.", WEBPACK_MANIFEST);
-            } catch (IOException ignored) {
-            }
+                this.webpackBundlesLMT.set(lastModifiedTime);
+                this.logger.infof("%s file has been changed, updating webpack " +
+                                  "bundles hash map.", WEBPACK_MANIFEST);
+            } catch (IOException ignored) {}
         }
         try (InputStream inputStream = resource.openStream()) {
             final JsonObject entries = Json.createReader(inputStream).readObject();
             if (entries == null || entries.isEmpty()) {
-                LOG.errorf("No webpack entries found in %s file.", WEBPACK_MANIFEST);
+                this.logger.errorf("No webpack entries found in %s file.", WEBPACK_MANIFEST);
                 return;
             }
             for (final Map.Entry<String, JsonValue> jsonEntry : entries.entrySet()) {
@@ -72,29 +86,30 @@ public class WebpackManifest {
                         }
                     };
                     if (JakartaStartup.PROFILE == JakartaProfile.DEVELOPMENT) {
-                        WEBPACK_BUNDLES.entrySet().removeIf(entry -> !entries.containsKey(entry.getKey()));
-                        if (WEBPACK_BUNDLES.containsKey(key)) {
-                            WEBPACK_BUNDLES.replace(key, hashedFilePath.get());
+                        this.webpackBundles.entrySet()
+                            .removeIf(entry -> !entries.containsKey(entry.getKey()));
+                        if (this.webpackBundles.containsKey(key)) {
+                            this.webpackBundles.replace(key, hashedFilePath.get());
                             continue;
                         }
                     }
-                    WEBPACK_BUNDLES.put(key, hashedFilePath.get());
+                    webpackBundles.put(key, hashedFilePath.get());
                 }
             }
         } catch (IOException exception) {
-            LOG.error(exception.getMessage(), exception);
+            this.logger.error(exception.getMessage(), exception);
         }
     }
 
-    static String getResource(final String fileName) {
+    public String getResource(final String fileName) {
         if (JakartaStartup.PROFILE == JakartaProfile.DEVELOPMENT) {
-            WebpackManifest.load();
+            reloadWebpackBundles();
         }
-        final String resource = WEBPACK_BUNDLES.get(fileName);
+        final String resource = this.webpackBundles.get(fileName);
         if (resource != null) {
             return resource;
         }
-        LOG.warnf("No webpack entry for %s", fileName);
+        this.logger.warnf("No webpack entry for %s", fileName);
         return "/no/manifest/entry/for/" + fileName;
     }
 }

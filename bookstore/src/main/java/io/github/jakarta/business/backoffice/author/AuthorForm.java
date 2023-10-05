@@ -20,7 +20,7 @@ import java.io.Serializable;
 import static io.github.jakarta.business.backoffice.author.AuthorForm.AuthorBean;
 
 @Controller
-@Path("/backoffice/authors")
+@Path(Backoffice.AUTHORS)
 @Produces(MediaType.TEXT_HTML)
 public class AuthorForm extends Form<Author, AuthorBean> {
 
@@ -29,11 +29,11 @@ public class AuthorForm extends Form<Author, AuthorBean> {
 
     @Override
     protected ViewLocation view() {
-        return Backoffice.BOOK_AUTHOR_FORM;
+        return Backoffice.BOOK_AUTHOR_FORM_JSP;
     }
 
     @GET
-    @Path("/new")
+    @Path(Backoffice.EMPTY_FORM)
     public Response authorForm() {
         return ok();
     }

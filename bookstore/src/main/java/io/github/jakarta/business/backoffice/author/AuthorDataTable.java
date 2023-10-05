@@ -14,7 +14,7 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Controller
-@Path("/backoffice/authors")
+@Path(Backoffice.AUTHORS)
 @Produces(MediaType.TEXT_HTML)
 public class AuthorDataTable extends DataTable {
 
@@ -23,7 +23,7 @@ public class AuthorDataTable extends DataTable {
 
     @Override
     protected ViewLocation view() {
-        return Backoffice.BOOK_AUTHOR_LIST;
+        return Backoffice.BOOK_AUTHOR_LIST_JSP;
     }
 
     @Override

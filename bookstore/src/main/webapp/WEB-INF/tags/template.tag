@@ -1,5 +1,8 @@
 <%@ tag pageEncoding="UTF-8" description="Backoffice JSP Template" %>
 
+<jsp:useBean id="invokeJspc" scope="request" type="java.lang.Boolean" />
+<% if (! invokeJspc) { %>
+
 <%@ attribute name="title" description="The page title displayed in the browser tab."
               type="java.lang.String" required="false" %>
 
@@ -72,3 +75,5 @@
             </footer>
     </body>
 </html> <% } %>
+
+<% } %>

@@ -34,6 +34,9 @@ public abstract class Form<T extends Entity, BeanInstance> extends View {
     private HttpServletResponse response;
 
     public Response ok(final Supplier<Result<T>> resultSupplier) {
+        if (view() == ViewLocation.NONE) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
         if (!this.formBeanInstance.get().isCached()) {
             final Result<T> result = resultSupplier.get();
             updateForm(result.unwrap(), form -> {
@@ -45,6 +48,10 @@ public abstract class Form<T extends Entity, BeanInstance> extends View {
     }
 
     public Response postRedirect(final T entity) {
+        if (view() == ViewLocation.NONE) {
+            return Response.status(Response.Status.NOT_FOUND).build();
+        }
+
         final ValidatedGroup validations = entity.validate();
 
         for (final ValidationResult validation : validations) {
@@ -61,7 +68,7 @@ public abstract class Form<T extends Entity, BeanInstance> extends View {
                 .addHeader(this.response);
 
             return Response.status(Status.BAD_REQUEST)
-                .entity(view().get())
+                .entity(view().resolveViewPath())
                 .build();
         }
 

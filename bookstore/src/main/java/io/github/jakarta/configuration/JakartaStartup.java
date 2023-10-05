@@ -1,13 +1,15 @@
 package io.github.jakarta.configuration;
 
-import io.github.jakarta.configuration.webpack.WebpackManifest;
-import jakarta.annotation.PostConstruct;
-import jakarta.ejb.Singleton;
-import jakarta.ejb.Startup;
+import io.github.jakarta.view.jsp.JspcRunnable;
+import io.github.jakarta.configuration.webpack.WebpackJspTag;
+import jakarta.annotation.Resource;
+import jakarta.enterprise.concurrent.ManagedExecutorService;
+import jakarta.servlet.ServletContextEvent;
+import jakarta.servlet.ServletContextListener;
+import jakarta.servlet.annotation.WebListener;
 
-@Startup
-@Singleton
-public class JakartaStartup {
+@WebListener
+public class JakartaStartup implements ServletContextListener {
 
     public static final JakartaProfile PROFILE;
 
@@ -20,9 +22,16 @@ public class JakartaStartup {
         }
     }
 
-    @PostConstruct
-    void init() {
-        WebpackManifest.load();
-    }
+    @Resource
+    private ManagedExecutorService mes;
 
+    @Override
+    public void contextInitialized(final ServletContextEvent servletContextEvent) {
+        this.mes.runAsync(WebpackJspTag.WEBPACK_MANIFEST);
+
+        final Runnable jspcRunnable = new JspcRunnable(
+            this.mes, servletContextEvent.getServletContext()
+        );
+        this.mes.runAsync(jspcRunnable);
+    }
 }

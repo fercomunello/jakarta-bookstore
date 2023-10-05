@@ -1,23 +1,52 @@
 package io.github.jakarta.business.backoffice;
 
+import io.github.jakarta.business.Text;
 import io.github.jakarta.view.ViewLocation;
+
+import java.io.File;
 
 public enum Backoffice implements ViewLocation {
 
-    DASHBOARD,
-    BOOK_AUTHOR_FORM,
-    BOOK_AUTHOR_LIST;
+    DASHBOARD_JSP(Backoffice.ENTRYPOINT + Backoffice.DASHBOARD),
 
-    private final String path;
+    BOOK_AUTHOR_LIST_JSP(Backoffice.AUTHORS),
+    BOOK_AUTHOR_FORM_JSP(Backoffice.AUTHORS + Backoffice.EMPTY_FORM) ;
 
-    Backoffice() {
-        final var relativePath = this.name().toLowerCase().replace("_", "/");
-        this.path = "backoffice/" + relativePath + ".jsp";
+    public static final String ENTRYPOINT = "/backoffice";
+    public static final String DASHBOARD = "/dashboard";
+    public static final String EMPTY_FORM = "/new";
+
+    public static final String AUTHORS = ENTRYPOINT + "/authors";
+
+    private final Text jspPath, uriPath;
+
+    Backoffice(final String uriPath) {
+        final var constant = this.name();
+        final var suffix = "_JSP";
+        if (!constant.endsWith(suffix)) {
+            throw new IllegalStateException(
+                "Invalid suffix for enum constant %s, replace it with '%s'"
+                    .formatted(constant, suffix)
+            );
+        }
+        this.jspPath = new Text(
+            ENTRYPOINT.replace('/', File.separatorChar)
+            + File.separatorChar
+            + constant
+                .replace(suffix, suffix.replace('_', '.'))
+                .toLowerCase()
+                .replace('_', File.separatorChar)
+        );
+        this.uriPath = new Text(uriPath);
     }
 
     @Override
-    public String get() {
-        return this.path;
+    public String resolveViewPath() {
+        return this.jspPath.toString()
+            .substring(1);
     }
 
+    public String uriPath() {
+        return this.uriPath.toString();
+    }
 }

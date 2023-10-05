@@ -10,13 +10,13 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 
 @Controller
-@Path("/backoffice")
-@Produces(MediaType.TEXT_HTML)
+@Path(value = Backoffice.ENTRYPOINT)
+@Produces(value = MediaType.TEXT_HTML)
 public class Dashboard extends View {
 
     @Override
     protected ViewLocation view() {
-        return Backoffice.DASHBOARD;
+        return Backoffice.DASHBOARD_JSP;
     }
 
     @GET
@@ -25,9 +25,8 @@ public class Dashboard extends View {
     }
 
     @GET
-    @Path("/dashboard")
+    @Path(value = Backoffice.DASHBOARD)
     public Response dashboard() {
-        return ok();
+        return ok(() -> {});
     }
-
 }
