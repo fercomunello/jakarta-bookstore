@@ -32,7 +32,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" hx-preserve="true"/>
         <meta name="author" content="Fernando Comunello" hx-preserve="true">
 
-        <jsp:invoke fragment="metatags" /> <% } %>
+        <jsp:invoke fragment="metatags" /><% } %>
 
         <c:choose>
             <c:when test="${not empty title}">
@@ -43,6 +43,8 @@
             </c:otherwise>
         </c:choose>
 
+        <script src="${webpack:javascript('browser.script')}"></script>
+
         <% if (!hxBoosted) { %>
         <link rel="icon" href="${webpack:icon('favicon')}" type="image/x-icon" hx-preserve="true">
         <link rel="stylesheet" href="${webpack:css('bootstrap')}" hx-preserve="true">
@@ -51,7 +53,6 @@
         <script src="${webpack:javascript('htmx')}" defer hx-preserve="true"></script>
         <script src="${webpack:javascript('bootstrap')}" defer hx-preserve="true"></script>
         <script src="${webpack:javascript('nav-header.script')}" defer hx-preserve="true"></script>
-
         <script src="${webpack:javascript('theme-switcher.script')}" hx-preserve="true"></script>
         <% } %>
 

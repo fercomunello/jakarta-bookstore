@@ -34,6 +34,7 @@ const config = {
             './src/javascript/header.mobile.ts'
         ],
         'theme-switcher.script': './src/javascript/theme-switcher.ts',
+        'browser.script': './src/javascript/browser/script.js',
     },
 
     module: {
