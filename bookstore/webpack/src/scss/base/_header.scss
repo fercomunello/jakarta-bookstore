@@ -1,0 +1,60 @@
+@import '../common/mixins';
+
+[data-bs-theme=dark] #main-header {
+    --header-dash: #ff5f35;
+}
+
+[data-bs-theme=light] #main-header {
+    --header-dash: #3aa0ef;
+    background-color: rgb(248, 249, 255);
+}
+
+#main-header {
+    box-shadow: 0 0.6rem 1rem rgba(0,0,0,0.15), inset 0 -1px 0 rgba(255,255,255,0);
+
+    #dashboard-link {
+        @include flex-row-center;
+
+        font-size: 1.35rem;
+        font-weight: 550;
+        transition: .2s;
+        position: relative;
+
+        &::before {
+            @include empty-content;
+            background: url('../../assets/java-coffee.svg') no-repeat;
+            background-size: 39px;
+            width: 39px;
+            height: 39px;
+            margin-right: 5px;
+        }
+
+        &::after {
+            @include empty-content-abs;
+            margin-top: 4px;
+            border-bottom: 0.25rem solid var(--header-dash);
+            width: 3rem;
+            border-radius: 3px;
+            left: 45px;
+            bottom: 6px
+        }
+
+        &:hover {
+            transform: scale(1.15);
+        }
+    }
+
+    @media (max-width: 685px) {
+        #dashboard-link {
+            &:hover {
+                transform: unset;
+            }
+
+            @media (max-width: 322px) {
+                &:before {
+                    display: none;
+                }
+            }
+        }
+    }
+}

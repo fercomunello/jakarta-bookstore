@@ -1,0 +1,11 @@
+@use 'header';
+@use 'progress_bar';
+@use 'theme_switcher';
+
+body {
+    --webkit-font-smoothing: antialiased;
+    --moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+    text-shadow: white 0.016rem 0 0;
+    scroll-behavior: smooth;
+}

@@ -24,4 +24,9 @@
         <function-signature>java.lang.String png(java.lang.String)</function-signature>
     </function>
 
+    <function>
+        <name>icon</name>
+        <function-class>io.github.jakarta.configuration.webpack.WebpackJspTag</function-class>
+        <function-signature>java.lang.String icon(java.lang.String)</function-signature>
+    </function>
 </taglib>

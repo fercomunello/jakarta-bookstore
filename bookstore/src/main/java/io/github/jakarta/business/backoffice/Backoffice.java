@@ -7,13 +7,15 @@ import java.io.File;
 
 public enum Backoffice implements ViewLocation {
 
-    DASHBOARD_JSP(Backoffice.ENTRYPOINT + Backoffice.DASHBOARD),
+    DASHBOARD_JSP(Backoffice.HOME),
 
     BOOK_AUTHOR_LIST_JSP(Backoffice.AUTHORS),
     BOOK_AUTHOR_FORM_JSP(Backoffice.AUTHORS + Backoffice.EMPTY_FORM) ;
 
     public static final String ENTRYPOINT = "/backoffice";
     public static final String DASHBOARD = "/dashboard";
+    public static final String HOME = ENTRYPOINT + DASHBOARD;
+
     public static final String EMPTY_FORM = "/new";
 
     public static final String AUTHORS = ENTRYPOINT + "/authors";

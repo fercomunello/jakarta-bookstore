@@ -1,67 +1,120 @@
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+'use strict'
 
 const {WebpackManifestPlugin} = require('webpack-manifest-plugin');
-const production = process.env.NODE_ENV === 'production';
+const TerserPlugin = require("terser-webpack-plugin");
+
+const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const AutoPrefixer = require('autoprefixer');
+
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+const CopyPlugin = require("copy-webpack-plugin");
 
 const path = require('path');
+const production = process.env.NODE_ENV === 'production';
+
+const resolveDistPath = (folder = '') =>
+    resolveBuildPath(`/dist/${folder}`);
+
+const resolveBuildPath = (folder = '') =>
+    path.resolve(__dirname, `../target/ROOT/${folder}`);
 
 const config = {
     entry: {
-        'htmx.bundle': [
-            './src/javascript/libs/htmx/htmx.js',
-            './src/javascript/libs/htmx/htmx.ext.js'
+        'htmx': [
+            './src/javascript/libs/htmx.js',
+            './src/javascript/libs/htmx.ext.js'
         ],
-        'layout.bundle':
-            './src/css/layout/base.scss',
-        'header.bundle': [
-            './src/javascript/header/header.progress.bar.ts',
-            './src/javascript/header/header.menu.ts'
-        ]
+        'bootstrap': [
+            './src/scss/bootstrap.scss',
+            './src/javascript/libs/bootstrap.js'
+        ],
+        'app.styles': './src/scss/base/styles.scss',
+        'nav-header.script': [
+            './src/javascript/header.progress.bar.ts',
+            './src/javascript/header.mobile.ts'
+        ],
+        'theme-switcher.script': './src/javascript/theme-switcher.ts',
     },
-    output: {
-        filename: '[name].[contenthash].js',
-        path: path.resolve(__dirname, '../target/ROOT/dist'),
-        clean: true
-    },
+
     module: {
         rules: [
             {
                 test: /\.(ts)$/i,
                 loader: 'ts-loader',
-                exclude: '/node_modules/',
+                exclude: /node_modules/,
             },
             {
                 test: /\.s[ac]ss$/i,
+                exclude: /node_modules/,
                 use: [
-                    MiniCssExtractPlugin.loader,
-                    'css-loader',
-                    'sass-loader'
+                    // Extracts CSS for each JS file that includes CSS
+                    { loader: MiniCssExtractPlugin.loader },
+                    { // Interprets and resolve @import/url()
+                        loader: 'css-loader'
+                    },
+                    { // Loads a SASS/SCSS file and compiles it to CSS
+                        loader: 'sass-loader'
+                    },
+                    { // Loader for webpack to process CSS with PostCSS
+                        loader: 'postcss-loader',
+                        options: {
+                            postcssOptions: {
+                                plugins: [AutoPrefixer]
+                            }
+                        }
+                    },
                 ],
             },
         ],
     },
-    optimization: {
+
+    optimization: production ? {
         minimize: true,
         minimizer: [
+            new TerserPlugin({
+                parallel: true,
+                terserOptions: {
+                    compress: {
+                        drop_console: true,
+                    },
+                    mangle: true,
+                }
+            }),
             new CssMinimizerPlugin({
                 parallel: true
-            }),
+            })
         ],
+    } : {},
+
+    output: {
+        filename: '[name].[contenthash].js',
+        path: resolveDistPath(),
+        clean: true
     },
+
     plugins: [
         new MiniCssExtractPlugin({
             filename: '[name].[contenthash].css',
             chunkFilename: '[id].[contenthash].css',
         }),
         new WebpackManifestPlugin({
-            fileName: path.resolve(__dirname, '../target/ROOT/META-INF/webpack.manifest.json'),
+            fileName: resolveBuildPath('/META-INF/webpack.manifest.json'),
             publicPath: ''
-        })
+        }),
+        new CopyPlugin({
+            patterns: [
+                {
+                    from: './src/assets',
+                    to: resolveDistPath('/assets/[name].[contenthash][ext]')
+                },
+            ],
+        }),
     ],
+
     resolve: {
         extensions: ['.ts', '.js', '...'],
     },
+
     watchOptions: {
         poll: 100,
         ignored: /node_modules/,

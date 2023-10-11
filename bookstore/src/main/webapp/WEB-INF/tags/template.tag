@@ -29,8 +29,8 @@
     <head>
         <% if (!hxBoosted) { %>
         <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-        <meta name="author" content="Fernando Comunello">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" hx-preserve="true"/>
+        <meta name="author" content="Fernando Comunello" hx-preserve="true">
 
         <jsp:invoke fragment="metatags" /> <% } %>
 
@@ -44,11 +44,15 @@
         </c:choose>
 
         <% if (!hxBoosted) { %>
-        <link href="${webpack:png('favicon')}" sizes="32x32" type="image/png" rel="icon" hx-preserve="true">
-        <link href="${webpack:css('layout.bundle')}" rel="stylesheet" hx-preserve="true">
+        <link rel="icon" href="${webpack:icon('favicon')}" type="image/x-icon" hx-preserve="true">
+        <link rel="stylesheet" href="${webpack:css('bootstrap')}" hx-preserve="true">
+        <link rel="stylesheet" href="${webpack:css('app.styles')}" hx-preserve="true">
 
-        <script src="${webpack:javascript('htmx.bundle')}" defer hx-preserve="true"></script>
-        <script src="${webpack:javascript('header.bundle')}" defer hx-preserve="true"></script>
+        <script src="${webpack:javascript('htmx')}" defer hx-preserve="true"></script>
+        <script src="${webpack:javascript('bootstrap')}" defer hx-preserve="true"></script>
+        <script src="${webpack:javascript('nav-header.script')}" defer hx-preserve="true"></script>
+
+        <script src="${webpack:javascript('theme-switcher.script')}" hx-preserve="true"></script>
         <% } %>
 
         <jsp:invoke fragment="css" />
@@ -59,21 +63,20 @@
     <body hx-ext="head-support" hx-indicator="#main-progress-bar">
         <%@ include file="layout/header.jsp" %>
 
-        <main>
-            <div id="content" class="container"> <% } %>
-                <c:if test="${not empty title}">
-                    <h1>${title}</h1>
-                </c:if>
-                <jsp:doBody />
-            <% if (!hxBoosted) { %>
-            </div>
-        </main><% } %>
-
-        <% if (!hxBoosted) { %>
+        <div class="container">
+            <main class="row">
+                <div id="content"> <% } %>
+                    <c:if test="${not empty title}">
+                        <h1>${title}</h1>
+                    </c:if>
+                    <jsp:doBody />
+                    <% if (!hxBoosted) { %>
+                </div>
+            </main>
             <footer id="footer">
                 <p>&copy; ${template.year} - All rights reserved.</p>
             </footer>
+        </div>
     </body>
 </html> <% } %>
-
 <% } %>

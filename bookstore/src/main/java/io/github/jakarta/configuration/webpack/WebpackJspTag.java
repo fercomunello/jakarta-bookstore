@@ -4,18 +4,23 @@ public interface WebpackJspTag {
 
     WebpackManifest WEBPACK_MANIFEST = new WebpackManifest();
 
-    static String css(String fileName) {
-        fileName = fileName + ".css";
-        return WEBPACK_MANIFEST.getResource(fileName);
+    static String css(String name) {
+        name = name + ".css";
+        return WEBPACK_MANIFEST.getResource(name);
     }
 
-    static String javascript(String fileName) {
-        fileName = fileName + ".js";
-        return WEBPACK_MANIFEST.getResource(fileName);
+    static String javascript(String name) {
+        name = name + ".js";
+        return WEBPACK_MANIFEST.getResource(name);
     }
 
-    static String png(String fileName) {
-        fileName = fileName + ".png";
-        return WEBPACK_MANIFEST.getResource(fileName);
+    static String png(String name) {
+        name = "assets/" + name + ".png";
+        return WEBPACK_MANIFEST.getResource(name);
+    }
+
+    static String icon(String name) {
+        name = "assets/" + name + ".ico";
+        return WEBPACK_MANIFEST.getResource(name);
     }
 }
