@@ -3,7 +3,7 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 
 <jsp:useBean id="authors" scope="request"
- type="java.util.List<io.github.jakarta.business.backoffice.author.AuthorDataTable.AuthorInfo>"/>
+ type="java.util.List<io.github.jakarta.business.book.author.AuthorDataTable.AuthorInfo>"/>
 
 <jakarta:template title="Book authors">
     <jsp:body>

@@ -1,6 +1,6 @@
 package io.github.jakarta.view.jsp;
 
-import io.github.jakarta.business.backoffice.Backoffice;
+import io.github.jakarta.business.Backoffice;
 import jakarta.servlet.ServletContext;
 import org.jboss.logging.Logger;
 

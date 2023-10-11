@@ -1,6 +1,5 @@
-package io.github.jakarta.business.backoffice;
+package io.github.jakarta.view.model.template;
 
-import io.github.jakarta.view.model.Template;
 import jakarta.enterprise.context.RequestScoped;
 import jakarta.inject.Named;
 

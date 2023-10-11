@@ -1,4 +1,6 @@
-package io.github.jakarta.business;
+package io.github.jakarta.business.person;
+
+import io.github.jakarta.common.Text;
 
 public final class PersonName implements Name {
 

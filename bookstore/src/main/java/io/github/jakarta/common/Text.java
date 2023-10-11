@@ -1,4 +1,4 @@
-package io.github.jakarta.business;
+package io.github.jakarta.common;
 
 public final class Text implements CharSequence {
 

@@ -1,7 +1,7 @@
 package io.github.jakarta.view.model;
 
-import io.github.jakarta.business.validation.ValidatedGroup;
-import io.github.jakarta.business.validation.ValidationResult;
+import io.github.jakarta.validation.ValidatedGroup;
+import io.github.jakarta.validation.ValidationResult;
 import jakarta.inject.Named;
 import jakarta.mvc.RedirectScoped;
 

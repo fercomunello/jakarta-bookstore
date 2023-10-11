@@ -1,7 +1,7 @@
-package io.github.jakarta.business.validation.constraints;
+package io.github.jakarta.validation.constraints;
 
-import io.github.jakarta.business.validation.Validation;
-import io.github.jakarta.business.validation.ValidationResult;
+import io.github.jakarta.validation.Validation;
+import io.github.jakarta.validation.ValidationResult;
 import io.github.jakarta.i18n.Messages;
 import io.github.jakarta.i18n.MockMessageBundle;
 import io.github.jakarta.i18n.MessageBundle;

@@ -1,4 +1,4 @@
-package io.github.jakarta.business;
+package io.github.jakarta.business.person;
 
 public interface Name {
     String first();

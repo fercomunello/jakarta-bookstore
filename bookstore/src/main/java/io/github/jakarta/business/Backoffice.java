@@ -1,6 +1,6 @@
-package io.github.jakarta.business.backoffice;
+package io.github.jakarta.business;
 
-import io.github.jakarta.business.Text;
+import io.github.jakarta.common.Text;
 import io.github.jakarta.view.ViewLocation;
 
 import java.io.File;

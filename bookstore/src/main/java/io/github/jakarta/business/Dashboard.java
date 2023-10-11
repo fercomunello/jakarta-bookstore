@@ -1,4 +1,4 @@
-package io.github.jakarta.business.backoffice;
+package io.github.jakarta.business;
 
 import io.github.jakarta.view.ViewLocation;
 import io.github.jakarta.view.View;

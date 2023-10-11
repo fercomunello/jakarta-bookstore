@@ -1,4 +1,4 @@
-package io.github.jakarta.view.model;
+package io.github.jakarta.view.model.template;
 
 import java.time.Year;
 

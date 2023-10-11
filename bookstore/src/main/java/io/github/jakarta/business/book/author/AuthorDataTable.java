@@ -1,7 +1,7 @@
-package io.github.jakarta.business.backoffice.author;
+package io.github.jakarta.business.book.author;
 
-import io.github.jakarta.business.Text;
-import io.github.jakarta.business.backoffice.Backoffice;
+import io.github.jakarta.common.Text;
+import io.github.jakarta.business.Backoffice;
 import io.github.jakarta.entity.UUID;
 import io.github.jakarta.view.DataTable;
 import io.github.jakarta.view.ViewLocation;

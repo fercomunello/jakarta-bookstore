@@ -1,7 +1,6 @@
-package io.github.jakarta.business.validation;
+package io.github.jakarta.validation;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Iterator;
 
 public final class ValidatedGroup implements Iterable<ValidationResult> {

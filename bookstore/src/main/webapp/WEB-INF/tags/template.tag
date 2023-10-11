@@ -22,7 +22,7 @@
 
 <% if (!hxBoosted) { %>
 <jsp:useBean id="template" scope="request"
-             type="io.github.jakarta.business.backoffice.BackofficeTemplate" />
+             type="io.github.jakarta.view.model.template.BackofficeTemplate" />
 
 <!DOCTYPE html>
 <html lang="en"> <% } %>

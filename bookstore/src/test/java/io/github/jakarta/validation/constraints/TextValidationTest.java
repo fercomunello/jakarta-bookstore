@@ -1,12 +1,10 @@
-package io.github.jakarta.business.validation.constraints;
+package io.github.jakarta.validation.constraints;
 
-import io.github.jakarta.business.PersonName;
-import io.github.jakarta.business.Text;
-import io.github.jakarta.business.validation.Validation;
-import io.github.jakarta.i18n.Messages;
+import io.github.jakarta.business.person.PersonName;
+import io.github.jakarta.common.Text;
+import io.github.jakarta.validation.Validation;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;

@@ -1,8 +1,8 @@
 package io.github.jakarta.view;
 
 import io.github.jakarta.Bean;
-import io.github.jakarta.business.validation.ValidatedGroup;
-import io.github.jakarta.business.validation.ValidationResult;
+import io.github.jakarta.validation.ValidatedGroup;
+import io.github.jakarta.validation.ValidationResult;
 import io.github.jakarta.entity.Entity;
 import io.github.jakarta.entity.Result;
 import io.github.jakarta.view.htmx.HxFlag;

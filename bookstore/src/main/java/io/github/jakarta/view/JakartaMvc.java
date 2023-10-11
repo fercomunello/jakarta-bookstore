@@ -1,7 +1,7 @@
 package io.github.jakarta.view;
 
-import io.github.jakarta.business.backoffice.BackofficeTemplate;
-import io.github.jakarta.business.bookstore.BookstoreTemplate;
+import io.github.jakarta.view.model.template.BackofficeTemplate;
+import io.github.jakarta.view.model.template.BookstoreTemplate;
 import io.github.jakarta.view.htmx.HxFlag;
 import io.github.jakarta.view.jsp.Jspc;
 import jakarta.annotation.Priority;

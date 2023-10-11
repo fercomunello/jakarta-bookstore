@@ -1,4 +1,4 @@
-package io.github.jakarta.business.validation;
+package io.github.jakarta.validation;
 
 public final class ValidationResult {
 

@@ -1,21 +1,20 @@
-package io.github.jakarta.business.backoffice.author;
+package io.github.jakarta.business.book.author;
 
 import io.github.jakarta.Bean;
-import io.github.jakarta.business.Text;
-import io.github.jakarta.business.backoffice.author.AuthorForm.AuthorBean;
-import io.github.jakarta.business.validation.ValidatedGroup;
-import io.github.jakarta.business.validation.Validation;
-import io.github.jakarta.business.validation.constraints.NameLengthOf;
-import io.github.jakarta.business.validation.ValidationGroup;
-import io.github.jakarta.business.validation.constraints.NotBlankText;
+import io.github.jakarta.common.Text;
+import io.github.jakarta.validation.ValidatedGroup;
+import io.github.jakarta.validation.Validation;
+import io.github.jakarta.validation.constraints.NameLengthOf;
+import io.github.jakarta.validation.ValidationGroup;
+import io.github.jakarta.validation.constraints.NotBlankText;
 import io.github.jakarta.entity.Result;
-import io.github.jakarta.business.Name;
-import io.github.jakarta.business.PersonName;
+import io.github.jakarta.business.person.Name;
+import io.github.jakarta.business.person.PersonName;
 import io.github.jakarta.entity.Entity;
 import io.github.jakarta.entity.UUID;
 import io.github.jakarta.sql.Database;
 
-public final class Author implements Entity, Bean<AuthorBean> {
+public final class Author implements Entity, Bean<AuthorForm.AuthorBean> {
 
     private final UUID uuid;
     private final Name name;
@@ -62,7 +61,7 @@ public final class Author implements Entity, Bean<AuthorBean> {
     }
 
     @Override
-    public void unpack(final AuthorBean authorBean) {
+    public void unpack(final AuthorForm.AuthorBean authorBean) {
         authorBean.setFirstName(new Text(this.name.first()));
         authorBean.setLastName(new Text(this.name.last()));
         authorBean.setNotableWork(this.notableWork);
