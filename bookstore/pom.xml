@@ -19,10 +19,11 @@
     <packaging>war</packaging>
 
     <properties>
-        <!-- Java 17 LTS -->
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <compiler-plugin.version>3.11.0</compiler-plugin.version>
+        <!-- Java 21 ~ Future LTS -->
+        <java.version>21</java.version>
+
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
 
         <!-- Jakarta EE Platform -->
         <jakarta-ee.version>10</jakarta-ee.version>

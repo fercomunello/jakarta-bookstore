@@ -32,10 +32,9 @@ public final class JspcRunnable implements Runnable {
                         final ServletContext servletContext) {
         this.logger = Logger.getLogger(JspcRunnable.class);
         this.executorService = executorService;
-        this.jspLocation = (location) -> {
-            final var viewsFolder = "WEB-INF" + File.separatorChar + "views" + File.separatorChar;
-            return new File(servletContext.getRealPath(viewsFolder + location)).exists();
-        };
+        this.jspLocation = (location) -> new File(
+            servletContext.getRealPath("WEB-INF/views/" + location)
+        ).exists();
     }
 
     @Override
@@ -49,12 +48,11 @@ public final class JspcRunnable implements Runnable {
         record CompilationTask(String jspPath, String jspName, boolean success) {}
         final List<CompletableFuture<CompilationTask>> completableFutures = new ArrayList<>();
 
-        {
-            final Backoffice[] pages = Backoffice.values();
-
-            final var httpClient = HttpClient.newBuilder()
+        try (var httpClient = HttpClient.newBuilder()
                 .executor(this.executorService)
-                .build();
+                .build()) {
+
+            final Backoffice[] pages = Backoffice.values();
 
             short waiting = 0;
             boolean serverAlive = false;
@@ -66,8 +64,8 @@ public final class JspcRunnable implements Runnable {
 
                 final URI uri;
                 try {
-                    uri = new URI("http://localhost:8080/bookstore" +
-                        pages[index].uriPath() + Jspc.asURLParameter(true)
+                    uri = new URI("http://localhost:8080/bookstore"
+                                  + pages[index].uriPath() + Jspc.asURLParameter(true)
                     );
                 } catch (final URISyntaxException ex) {
                     this.logger.error(ex.getMessage(), ex);
@@ -106,43 +104,43 @@ public final class JspcRunnable implements Runnable {
                     index++;
                 }
             }
-        }
 
-        if (LOG_INFO) {
-            byte i = 0, j = 1;
-            final StringBuilder log = new StringBuilder();
-            for (final var future : completableFutures) {
-                appendLog: {
-                    final CompilationTask compilationTask;
-                    try {
-                        compilationTask = future.get();
-                    } catch (InterruptedException | ExecutionException ex) {
-                        this.logger.error(ex.getMessage(), ex);
-                        break appendLog;
-                    }
+            if (LOG_INFO) {
+                byte i = 0, j = 1;
+                final StringBuilder log = new StringBuilder();
+                for (final var future : completableFutures) {
+                    appendLog: {
+                        final CompilationTask compilationTask;
+                        try {
+                            compilationTask = future.get();
+                        } catch (InterruptedException | ExecutionException ex) {
+                            this.logger.error(ex.getMessage(), ex);
+                            break appendLog;
+                        }
 
-                    final boolean greenJsp = compilationTask.success()
-                        && this.jspLocation.exists(compilationTask.jspPath());
+                        final boolean greenJsp = compilationTask.success()
+                                                 && this.jspLocation.exists(compilationTask.jspPath());
 
-                    log.append("\u001B[").append(greenJsp ? "32m" : "91m")
-                        .append(compilationTask.jspName())
-                        .append("\u001B[0m");
-                    if (i < completableFutures.size() - 1) {
-                        log.append(", ");
+                        log.append("\u001B[").append(greenJsp ? "32m" : "91m")
+                            .append(compilationTask.jspName())
+                            .append("\u001B[0m");
+                        if (i < completableFutures.size() - 1) {
+                            log.append(", ");
+                        }
+                        if (j == 3 && i < completableFutures.size() - 1) {
+                            log.append("\n    ");
+                            j = 0;
+                        } else {
+                            j++;
+                        }
+                        i++;
                     }
-                    if (j == 3 && i < completableFutures.size() - 1) {
-                        log.append("\n    ");
-                        j = 0;
-                    } else {
-                        j++;
-                    }
-                    i++;
                 }
+                this.logger.infof("%n\u001B[37m Pre-compiled JSPs:" +
+                                  "\u001B[0m \u001B[90m[\u001B[0m %s \u001B[90m] ~ %dms\u001B[0m %n%n%n",
+                    log.toString(), Duration.between(start, Instant.now()).toMillis()
+                );
             }
-            this.logger.infof("%n\u001B[37m Pre-compiled JSPs:" +
-                      "\u001B[0m \u001B[90m[\u001B[0m %s \u001B[90m] ~ %dms\u001B[0m %n%n%n",
-                log.toString(), Duration.between(start, Instant.now()).toMillis()
-            );
         }
     }
 
