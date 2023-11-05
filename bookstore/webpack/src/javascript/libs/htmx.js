@@ -1,6 +1,7 @@
 // noinspection JSUnresolvedReference
 
 import 'htmx.org';
+import 'htmx.org/dist/ext/head-support';
 
 window.htmx = require("htmx.org");
 

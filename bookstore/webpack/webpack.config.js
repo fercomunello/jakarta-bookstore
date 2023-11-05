@@ -22,7 +22,6 @@ const config = {
     entry: {
         'htmx': [
             './src/javascript/libs/htmx.js',
-            './src/javascript/libs/htmx.ext.js'
         ],
         'bootstrap': [
             './src/scss/bootstrap.scss',
