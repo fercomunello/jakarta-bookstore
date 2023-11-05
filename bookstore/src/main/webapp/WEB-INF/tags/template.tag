@@ -63,6 +63,8 @@
         <%@ include file="layout/header.jsp" %>
 
         <div class="container">
+            <%@ include file="layout/noscript.jsp" %>
+
             <main class="row">
                 <div id="content"> <% } %>
                     <c:if test="${not empty title}">
