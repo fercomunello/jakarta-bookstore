@@ -43,8 +43,6 @@
             </c:otherwise>
         </c:choose>
 
-        <script src="${webpack:javascript('browser.script')}"></script>
-
         <% if (!hxBoosted) { %>
         <link rel="icon" href="${webpack:icon('favicon')}" type="image/x-icon" hx-preserve="true">
         <link rel="stylesheet" href="${webpack:css('bootstrap')}" hx-preserve="true">

@@ -1,9 +1,9 @@
 package io.github.jakarta.view;
 
-import io.github.jakarta.view.model.template.BackofficeTemplate;
-import io.github.jakarta.view.model.template.BookstoreTemplate;
 import io.github.jakarta.view.htmx.HxFlag;
 import io.github.jakarta.view.jsp.Jspc;
+import io.github.jakarta.view.model.template.BackofficeTemplate;
+import io.github.jakarta.view.model.template.BookstoreTemplate;
 import jakarta.annotation.Priority;
 import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.enterprise.inject.Instance;
@@ -13,6 +13,7 @@ import jakarta.mvc.engine.ViewEngineContext;
 import jakarta.mvc.engine.ViewEngineException;
 import jakarta.mvc.security.Csrf;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.eclipse.krazo.Properties;
 import org.eclipse.krazo.engine.JspViewEngine;
 
@@ -47,6 +48,9 @@ public class JakartaMvc extends JspViewEngine {
                     ))
             );
         });
+
+        final HttpServletResponse response = context.getResponse(HttpServletResponse.class);
+        response.setHeader("Vary", "HX-Request");
 
         super.processView(context);
     }
