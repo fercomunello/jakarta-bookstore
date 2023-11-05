@@ -24,8 +24,8 @@ const config = {
             './src/javascript/libs/htmx.js',
         ],
         'bootstrap': [
-            './src/scss/bootstrap.scss',
-            './src/javascript/libs/bootstrap.js'
+            './src/bootstrap/bootstrap.scss',
+            './src/bootstrap/bootstrap.ts',
         ],
         'app.styles': './src/scss/base/styles.scss',
         'nav-header.script': [
