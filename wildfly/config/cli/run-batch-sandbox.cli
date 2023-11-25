@@ -9,6 +9,9 @@ version
 # Set development profile
 /system-property=profile:add(value=development)
 
+# Set default encoding charset
+/subsystem=undertow/servlet-container=default:write-attribute(name=default-encoding, value="UTF-8")
+
 # Add datasource
 run-batch --file=cli/add-datasource.cli --verbose
 

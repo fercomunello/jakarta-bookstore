@@ -9,6 +9,9 @@ version
 # Set production profile
 /system-property=profile:add(value=production)
 
+# Set default encoding charset
+/subsystem=undertow/servlet-container=default:write-attribute(name=default-encoding, value="UTF-8")
+
 # Add datasource
 run-batch --file=cli/add-datasource.cli --verbose
 
