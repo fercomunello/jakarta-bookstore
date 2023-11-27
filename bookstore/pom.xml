@@ -35,9 +35,8 @@
         <wildfly.version>29.0.0.Final</wildfly.version>
         <war-plugin.version>3.3.2</war-plugin.version>
 
-        <!-- Hibernate ORM - (optional) -->
+        <!-- PostgreSQL JDBC Driver -->
         <postgresql.version>42.6.0</postgresql.version>
-        <hibernate-orm-core.version>6.2.6.Final</hibernate-orm-core.version>
 
         <!-- Testing Libraries -->
         <junit.version>5.9.2</junit.version>
@@ -64,12 +63,6 @@
         <dependency>
             <groupId>jakarta.transaction</groupId>
             <artifactId>jakarta.transaction-api</artifactId>
-            <scope>provided</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>jakarta.persistence</groupId>
-            <artifactId>jakarta.persistence-api</artifactId>
             <scope>provided</scope>
         </dependency>
 
@@ -141,6 +134,14 @@
             <scope>provided</scope>
         </dependency>
 
+        <!-- Other sources -->
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.1</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -172,19 +173,6 @@
                 <scope>import</scope>
                 <type>pom</type>
             </dependency>
-
-            <dependency>
-                <groupId>org.hibernate.orm</groupId>
-                <artifactId>hibernate-core</artifactId>
-                <version>${hibernate-orm-core.version}</version>
-                <scope>provided</scope>
-                <exclusions>
-                    <exclusion>
-                        <groupId>*</groupId>
-                        <artifactId>*</artifactId>
-                    </exclusion>
-                </exclusions>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 
@@ -205,7 +193,7 @@
                 <executions>
                     <execution>
                         <id>install node and npm</id>
-                        <phase>generate-resources</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>install-node-and-npm</goal>
                         </goals>
@@ -217,7 +205,7 @@
 
                     <execution>
                         <id>npm run build</id>
-                        <phase>generate-resources</phase>
+                        <phase>package</phase>
                         <goals>
                             <goal>npm</goal>
                         </goals>
@@ -226,6 +214,17 @@
                         </configuration>
                     </execution>
                 </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>${java.version}</source>
+                    <target>${java.version}</target>
+                    <compilerArgs>--enable-preview</compilerArgs>
+                </configuration>
             </plugin>
 
             <plugin>
@@ -241,6 +240,11 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>${war-plugin.version}</version>
                 <configuration>
+                    <archive>
+                        <manifestEntries>
+                            <Dependencies>org.postgresql</Dependencies>
+                        </manifestEntries>
+                    </archive>
                     <failOnMissingWebXml>true</failOnMissingWebXml>
                 </configuration>
             </plugin>

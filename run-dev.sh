@@ -227,6 +227,7 @@ function start_wildfly_async() {
   cd server/bin
 
   export JAVA_OPTS="-Xms512M -Xmx4G -XX:MetaspaceSize=96M -XX:MaxMetaspaceSize=256m -Djava.net.preferIPv4Stack=true" && \
+  export JAVA_OPTS="$JAVA_OPTS -Dfile.encoding=UTF-8 --enable-preview" && \
   export JAVA_OPTS="$JAVA_OPTS -Djboss.modules.system.pkgs=org.jboss.byteman -Djava.awt.headless=true" && \
   export JAVA_OPTS="$JAVA_OPTS -agentlib:jdwp=transport=dt_socket,address=${DEBUG_PORT},server=y,suspend=n" && \
   ./standalone.sh -c $WILDFLY_CONFIG > tmp/jboss_stdout &
@@ -354,7 +355,11 @@ function redeploy_apps() {
   cd - > /dev/null
 }
 
-function run_postgres() {
+function start_database() {
+  sh ../../run-postgres.sh --force
+}
+
+function reset_database() {
   sh ../../run-postgres.sh
 }
 
@@ -434,6 +439,7 @@ function print_help() {
 
 function launch_prompt() {
   echo ''
+  echo ''
 
   local sandbox_dir="$(pwd)"
   while true; do
@@ -456,14 +462,14 @@ function launch_prompt() {
 
     tput cup $(tput lines) 0
     echo -e -n $press_to
-    tput cup $(($LINES-2)) 0
+    tput cup $(($(tput lines)-2)) 0
 
     read -n 1 -r -s -t 1 reply || true
 
     if [[ "$reply" != "" ]]; then
       case "$reply" in
          r)
-           run_postgres
+           reset_database
            ;;
          d)
            if test ${DEPLOY} = true; then
@@ -501,13 +507,10 @@ function launch_prompt() {
   done
 }
 
-LINES=0
 function adjust_window () {
   clear
 
-  LINES=$(tput lines)
-
-  tput csr 0 $(($LINES-2))
+  tput csr 0 $(($(tput lines)-2))
   tput cup 0 0
 }
 
@@ -544,7 +547,7 @@ function main() {
     deploy_apps_silent
   fi
 
-  run_postgres
+  start_database
   capture_logs_async
   start_wildfly_async
   wait_server_startup
